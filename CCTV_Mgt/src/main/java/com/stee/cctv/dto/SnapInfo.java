@@ -23,18 +23,41 @@ import com.stee.cctv.utils.Util;
  *
  */
 public class SnapInfo {
-	private static String deviceId;
+	private String deviceId;
 
-	private static String picName;
+	private String picName;
 
-	private static String savePicPath;
+	private String savePicPath;
+
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
+	}
+
+	public String getPicName() {
+		return picName;
+	}
+
+	public void setPicName(String picName) {
+		this.picName = picName;
+	}
+
+	public String getSavePicPath() {
+		return savePicPath;
+	}
+
+	public void setSavePicPath(String savePicPath) {
+		this.savePicPath = savePicPath;
+	}
 
 	@Override
 	public String toString() {
 		return "SnapInfo [deviceId=" + deviceId + ", picName=" + picName + ", savePicPath=" + savePicPath + "]";
 	}
 
-	@SuppressWarnings("static-access")
 	public static String getSnapInfoXml(List<SnapInfo> list) {
 		Element root = DocumentHelper.createElement("Message");
 		Document document = DocumentHelper.createDocument(root);

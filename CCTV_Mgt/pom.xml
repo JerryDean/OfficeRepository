@@ -147,11 +147,11 @@
 	</dependency>
 	
 	<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-commons-annotations -->
-	<dependency>
+	<!-- <dependency>
 	    <groupId>org.hibernate</groupId>
 	    <artifactId>hibernate-commons-annotations</artifactId>
 	    <version>3.3.0.ga</version>
-	</dependency>
+	</dependency> -->
 	
 	<!-- https://mvnrepository.com/artifact/antlr/antlr -->
 	<dependency>

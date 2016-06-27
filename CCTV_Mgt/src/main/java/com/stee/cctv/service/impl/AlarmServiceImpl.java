@@ -2,6 +2,8 @@ package com.stee.cctv.service.impl;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.stee.cctv.service.IAlarmService;
 import com.stee.cctv.utils.Util;
 import com.stee.cctv.ws.AWebServiceClient;
@@ -24,6 +26,7 @@ import com.stee.cctv.ws.client.IAlarmWebServiceForFels;
  * @version 1.0
  *
  */
+@Service("alarmService")
 public class AlarmServiceImpl extends AWebServiceClient implements IAlarmService {
 
 	@Override

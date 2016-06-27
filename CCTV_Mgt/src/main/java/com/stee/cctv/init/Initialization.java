@@ -1,18 +1,12 @@
 package com.stee.cctv.init;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
 
-import com.stee.cctv.dao.EqtInfoExtendRepository;
-import com.stee.cctv.dao.EqtInfoRepository;
-import com.stee.cctv.entity.EquipmentInfo;
-import com.stee.cctv.entity.EquipmentInfoExtend;
+import com.stee.cctv.netty.client.Client;
+import com.stee.cctv.netty.handler.ServerHandler;
 import com.stee.cctv.netty.server.Server;
 
 /**
@@ -30,41 +24,31 @@ import com.stee.cctv.netty.server.Server;
  *
  */
 public class Initialization {
-	@Autowired
-	EqtInfoExtendRepository infoExtend;
-
-	@Autowired
-	EqtInfoRepository info;
+	@Resource
+	ServerHandler serverHandler;
 
 	ExecutorService executorService = Executors.newCachedThreadPool();
-
-	ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-
-	public static List<EquipmentInfoExtend> extendList = new ArrayList<>();
 
 	public void init() {
 		executorService.execute(new Runnable() {
 			public void run() {
 				try {
-					new Server().run();
+					new Server(serverHandler).run();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
-		scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+
+		executorService.execute(new Runnable() {
 			public void run() {
-				new Initialization().cacheDeviceInterval();
+				try {
+					new Client().run();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-		}, 0, 5, TimeUnit.MINUTES);
+		});
 	}
 
-	public void cacheDeviceInterval() {
-		List<String> idList = new ArrayList<>();
-		List<EquipmentInfo> infoList = info.getEQTInfoByDeviceType(3);
-		for (EquipmentInfo info : infoList) {
-			idList.add(info.getId());
-		}
-		Initialization.extendList = infoExtend.getEqtExtendByIdInAndUuidNotNull(idList);
-	}
 }

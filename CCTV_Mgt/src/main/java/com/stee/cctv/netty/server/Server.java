@@ -33,6 +33,13 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  */
 public class Server {
 
+	public Server(ServerHandler serverHandler) {
+		super();
+		this.serverHandler = serverHandler;
+	}
+
+	private ServerHandler serverHandler;
+
 	private volatile EventLoopGroup bossGroup;
 
 	private volatile EventLoopGroup workerGroup;
@@ -63,7 +70,7 @@ public class Server {
 						public void initChannel(SocketChannel ch) throws Exception {
 							ch.pipeline().addLast(new MessageEncoder());
 							ch.pipeline().addLast(new MessageDecoder());
-							ch.pipeline().addLast(new ServerHandler());
+							ch.pipeline().addLast(serverHandler);
 						}
 					}).option(ChannelOption.SO_BACKLOG, 1024).childOption(ChannelOption.SO_KEEPALIVE, true);
 			doBind();
@@ -100,11 +107,4 @@ public class Server {
 		channelFuture.channel().closeFuture().sync();
 	}
 
-	public static void main(String[] args) {
-		try {
-			new Server().run();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }

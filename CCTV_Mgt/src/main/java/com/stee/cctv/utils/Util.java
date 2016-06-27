@@ -23,7 +23,7 @@ public class Util {
 	/**
 	 * Socket 端口
 	 */
-	public static int port = Integer.parseInt(PropertyConfigurer.getContextProperty("port").toString());
+	public static int port = Integer.parseInt(PropertyConfigurer.getContextProperty("CCTV.netty.port").toString());
 
 	public static String ip = PropertyConfigurer.getContextProperty("ip").toString();
 
@@ -36,6 +36,8 @@ public class Util {
 
 	public static final Integer INTERVAL_SNAP = Integer
 			.valueOf(PropertyConfigurer.getContextProperty("CCTV.snap.interval").toString());
+
+	public static final String FTP_ADDRESS = PropertyConfigurer.getContextProperty("CCTV.snap.ftp").toString();
 
 	public static final String TYPE_LOGIN = "1001";
 

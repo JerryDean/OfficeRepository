@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Resource;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -19,10 +18,10 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.stee.cctv.dto.DeviceStatusResponse;
-import com.stee.cctv.dto.HeartBeat;
 import com.stee.cctv.dto.LoginResponse;
+import com.stee.cctv.dto.SnapInfo;
 import com.stee.cctv.service.IAlarmService;
-import com.stee.cctv.service.impl.AlarmServiceImpl;
+import com.stee.cctv.service.IEquipmentService;
 import com.stee.cctv.utils.NetAddressUtil;
 import com.stee.cctv.utils.Util;
 import com.stee.cctv.utils.XmlUtil;
@@ -47,25 +46,37 @@ import io.netty.channel.ChannelHandlerContext;
  *
  */
 public class ServerHandler extends ChannelHandlerAdapter {
-	@Resource
-	IAlarmService alarmService = new AlarmServiceImpl();
+
+	IAlarmService alarmService;
+
+	IEquipmentService equipmentService;
+
+	public ServerHandler() {
+		super();
+	}
+
+	public ServerHandler(IAlarmService alarmService, IEquipmentService equipmentService) {
+		super();
+		this.alarmService = alarmService;
+		this.equipmentService = equipmentService;
+	}
 
 	ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
 
 	@Override
 	public void channelActive(final ChannelHandlerContext ctx) throws Exception {
 		// 心跳线程
-		executorService.scheduleAtFixedRate(new Runnable() {
-			public void run() {
-				ctx.writeAndFlush(HeartBeat.getHeartBeatXml());
-			}
-		}, 0, Util.INTERVAL_HEARTBEAT, TimeUnit.SECONDS);
+		// executorService.scheduleAtFixedRate(new Runnable() {
+		// public void run() {
+		// ctx.writeAndFlush(HeartBeat.getHeartBeatXml());
+		// }
+		// }, 0, Util.INTERVAL_HEARTBEAT, TimeUnit.SECONDS);
 
 		// 视频截图线程
 		executorService.scheduleAtFixedRate(new Runnable() {
 			public void run() {
 				// 截图信息
-
+				ctx.writeAndFlush(SnapInfo.getSnapInfoXml(equipmentService.getSnapInfoList()));
 			}
 		}, 0, Util.INTERVAL_SNAP, TimeUnit.MINUTES);
 	}
