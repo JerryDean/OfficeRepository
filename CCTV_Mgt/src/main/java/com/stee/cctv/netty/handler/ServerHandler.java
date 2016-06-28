@@ -18,6 +18,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.stee.cctv.dto.DeviceStatusResponse;
+import com.stee.cctv.dto.HeartBeat;
 import com.stee.cctv.dto.LoginResponse;
 import com.stee.cctv.dto.SnapInfo;
 import com.stee.cctv.service.IAlarmService;
@@ -66,20 +67,17 @@ public class ServerHandler extends ChannelHandlerAdapter {
 	@Override
 	public void channelActive(final ChannelHandlerContext ctx) throws Exception {
 		// 心跳线程
-		// executorService.scheduleAtFixedRate(new Runnable() {
-		// public void run() {
-		// ctx.writeAndFlush(HeartBeat.getHeartBeatXml());
-		// }
-		// }, 0, Util.INTERVAL_HEARTBEAT, TimeUnit.SECONDS);
+		executorService.scheduleAtFixedRate(new Runnable() {
+			public void run() {
+				ctx.writeAndFlush(HeartBeat.getHeartBeatXml());
+			}
+		}, 0, Util.INTERVAL_HEARTBEAT, TimeUnit.SECONDS);
 
 		// 视频截图线程
 		executorService.scheduleAtFixedRate(new Runnable() {
 			public void run() {
 				// 截图信息
-				List<SnapInfo> list = new ArrayList<>();
-				list = equipmentService.getSnapInfoList();
-				String str = SnapInfo.getSnapInfoXml(list);
-				ctx.writeAndFlush(str);
+				ctx.writeAndFlush(SnapInfo.getSnapInfoXml(equipmentService.getSnapInfoList()));
 			}
 		}, 0, Util.INTERVAL_SNAP, TimeUnit.MINUTES);
 	}

@@ -4,6 +4,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.stee.cctv.dto.HeartBeat;
 import com.stee.cctv.netty.client.Client;
 import com.stee.cctv.utils.Util;
 
@@ -28,11 +29,11 @@ public class ClientHandler extends ChannelHandlerAdapter {
 
 	@Override
 	public void channelActive(final ChannelHandlerContext ctx) throws Exception {
-		// excutorService.scheduleAtFixedRate(new Runnable() {
-		// public void run() {
-		// ctx.writeAndFlush(TestEntity.message());
-		// }
-		// }, 0, 30, TimeUnit.SECONDS);
+		excutorService.scheduleAtFixedRate(new Runnable() {
+			public void run() {
+				ctx.writeAndFlush(HeartBeat.getHeartBeatXml());
+			}
+		}, 0, 30, TimeUnit.SECONDS);
 	}
 
 	@Override

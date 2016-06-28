@@ -15,7 +15,8 @@ package com.stee.cctv.utils;
  *
  */
 public class PacketUtil {
-	public static int length = 0;
+
+	public static int length;
 
 	public static StringBuilder stringBuilder = null;
 
@@ -27,30 +28,11 @@ public class PacketUtil {
 		stringBuilder = new StringBuilder();
 	}
 
-	// public static StringBuilder getStringBuilder() {
-	// if (null == stringBuilder) {
-	// synchronized (PacketUtil.class) {
-	// if (null == stringBuilder) {
-	// stringBuilder = new StringBuilder();
-	// }
-	// }
-	// }
-	// return stringBuilder;
-	// }
-	//
-	// public static int getLength() {
-	// if (0 != length) {
-	// return length;
-	// }
-	// return 0;
-	// }
-	//
-	// public static void setLength(int length) {
-	// PacketUtil.length = length;
-	// }
-	//
-	// public static void setStringBuilder(StringBuilder stringBuilder) {
-	// PacketUtil.stringBuilder = stringBuilder;
-	// }
+	public static boolean isCompleted(byte[] bytes) {
+		if (bytes[0] == 0x01 && bytes[bytes.length - 1] == 0x00) {
+			return true;
+		}
+		return false;
+	}
 
 }
