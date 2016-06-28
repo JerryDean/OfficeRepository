@@ -4,13 +4,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.stee.cctv.dto.HeartBeat;
 import com.stee.cctv.netty.client.Client;
 import com.stee.cctv.utils.Util;
 
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.timeout.IdleStateEvent;
 
 public class ClientHandler extends ChannelHandlerAdapter {
 	ScheduledExecutorService excutorService = Executors.newScheduledThreadPool(2);
@@ -30,11 +28,11 @@ public class ClientHandler extends ChannelHandlerAdapter {
 
 	@Override
 	public void channelActive(final ChannelHandlerContext ctx) throws Exception {
-		excutorService.scheduleAtFixedRate(new Runnable() {
-			public void run() {
-				ctx.writeAndFlush(HeartBeat.getHeartBeatXml());
-			}
-		}, 0, 30, TimeUnit.SECONDS);
+		// excutorService.scheduleAtFixedRate(new Runnable() {
+		// public void run() {
+		// ctx.writeAndFlush(TestEntity.message());
+		// }
+		// }, 0, 30, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -50,16 +48,16 @@ public class ClientHandler extends ChannelHandlerAdapter {
 
 	@Override
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-		if (evt instanceof IdleStateEvent) {
-			IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
-			switch (idleStateEvent.state()) {
-			case WRITER_IDLE:
-				ctx.writeAndFlush(HeartBeat.getHeartBeatXml());
-				break;
-			default:
-				break;
-			}
-		}
+		// if (evt instanceof IdleStateEvent) {
+		// IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
+		// switch (idleStateEvent.state()) {
+		// case WRITER_IDLE:
+		// ctx.writeAndFlush(HeartBeat.getHeartBeatXml());
+		// break;
+		// default:
+		// break;
+		// }
+		// }
 	}
 
 }

@@ -33,20 +33,17 @@ public class MessageDecoder extends ByteToMessageDecoder {
 		while (buf.isReadable()) {
 			byte[] nByte = new byte[buf.readableBytes()];
 			buf.readBytes(nByte);
-			if (nByte[nByte.length - 1] != 0x00 || nByte[0] != 0x01) {
-				// 简单判断是否为整包
-				return;
+			if (nByte[0] == 0x01) {
+				byte[] tByte = ByteUtil.subBytes(nByte, 5, nByte.length - 5);
+				in.add(new String(tByte));
 			}
-			byte[] lengthByte = new byte[4];
-			lengthByte[0] = nByte[4];
-			lengthByte[1] = nByte[3];
-			lengthByte[2] = nByte[2];
-			lengthByte[3] = nByte[1];
-			int length = ByteUtil.bytesToInt(lengthByte);
-			byte[] contentByte = new byte[length];
-			contentByte = ByteUtil.subBytes(nByte, 5, length);
-			String content = new String(contentByte);
-			in.add(content);
+			if (nByte[nByte.length - 1] == 0x00) {
+				byte[] tByte = ByteUtil.subBytes(nByte, 0, nByte.length - 1);
+				in.add(new String(tByte));
+			}
+			if (nByte[0] != 0x01 && nByte[nByte.length - 1] != 0x00) {
+				in.add(new String(nByte));
+			}
 		}
 	}
 

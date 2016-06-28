@@ -1,5 +1,7 @@
 package com.stee.cctv.utils;
 
+import java.util.Arrays;
+
 /**
  * Copyright @ 2007, ST Electronics Info-comm Systems PTE. LTD All rights
  * reserved.
@@ -222,5 +224,19 @@ public class ByteUtil {
 			nByte[i] = byte_1[start + i];
 		}
 		return nByte;
+	}
+
+	/**
+	 * 合并数组
+	 * 
+	 * @param first
+	 * @param second
+	 * @return
+	 * @author Jerry
+	 */
+	public static <T> T[] concat(T[] first, T[] second) {
+		T[] result = Arrays.copyOf(first, first.length + second.length);
+		System.arraycopy(second, 0, result, first.length, second.length);
+		return result;
 	}
 }

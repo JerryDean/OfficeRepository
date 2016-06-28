@@ -76,7 +76,10 @@ public class ServerHandler extends ChannelHandlerAdapter {
 		executorService.scheduleAtFixedRate(new Runnable() {
 			public void run() {
 				// 截图信息
-				ctx.writeAndFlush(SnapInfo.getSnapInfoXml(equipmentService.getSnapInfoList()));
+				List<SnapInfo> list = new ArrayList<>();
+				list = equipmentService.getSnapInfoList();
+				String str = SnapInfo.getSnapInfoXml(list);
+				ctx.writeAndFlush(str);
 			}
 		}, 0, Util.INTERVAL_SNAP, TimeUnit.MINUTES);
 	}

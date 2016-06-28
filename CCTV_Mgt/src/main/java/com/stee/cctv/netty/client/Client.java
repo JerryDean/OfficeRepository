@@ -3,7 +3,6 @@ package com.stee.cctv.netty.client;
 import java.util.concurrent.TimeUnit;
 
 import com.stee.cctv.netty.codec.MessageDecoder;
-import com.stee.cctv.netty.codec.MessageEncoder;
 import com.stee.cctv.netty.handler.ClientHandler;
 import com.stee.cctv.utils.Util;
 
@@ -58,7 +57,14 @@ public class Client {
 			bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 				@Override
 				public void initChannel(SocketChannel ch) throws Exception {
-					ch.pipeline().addLast(new MessageEncoder());
+					// ch.pipeline().addLast(new
+					// LengthFieldBasedFrameDecoder(1024 * 1024 * 1024, 1, 4, 0,
+					// 5));
+					// ch.pipeline().addLast(new StringDecoder());
+					// ByteBuf buf = Unpooled.buffer();
+					// buf.writeBytes(new byte[] { 0x00 });
+					// ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1024
+					// * 1024 * 1024, buf));
 					ch.pipeline().addLast(new MessageDecoder());
 					ch.pipeline().addLast(new ClientHandler());
 				}
