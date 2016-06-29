@@ -43,21 +43,6 @@ public class EquipmentServiceImpl implements IEquipmentService {
 	EqtInfoExtendRepository eqtExtendInfo;
 
 	@Override
-	public Map<String, String> getDeviceInfo() {
-		Map<String, String> map = new HashMap<>();
-		List<String> idList = new ArrayList<>();
-		List<EquipmentInfo> infoList = eqtInfo.getEQTInfoByDeviceType(3);
-		for (EquipmentInfo info : infoList) {
-			idList.add(info.getId());
-		}
-		List<EquipmentInfoExtend> extendList = eqtExtendInfo.getEqtExtendByIdInAndUuidNotNull(idList);
-		for (EquipmentInfoExtend extend : extendList) {
-			map.put(extend.getId(), extend.getUuid());
-		}
-		return map;
-	}
-
-	@Override
 	public List<SnapInfo> getSnapInfoList() {
 		Map<String, String> map = new HashMap<>();
 		List<String> idList = new ArrayList<>();

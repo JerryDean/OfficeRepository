@@ -1,7 +1,6 @@
 package com.stee.cctv.service;
 
 import java.util.List;
-import java.util.Map;
 
 import com.stee.cctv.dto.SnapInfo;
 
@@ -20,7 +19,6 @@ import com.stee.cctv.dto.SnapInfo;
  *
  */
 public interface IEquipmentService {
-	Map<String, String> getDeviceInfo();
 
 	List<SnapInfo> getSnapInfoList();
 }
