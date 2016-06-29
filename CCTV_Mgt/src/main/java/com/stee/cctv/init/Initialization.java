@@ -5,7 +5,6 @@ import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 
-import com.stee.cctv.netty.client.Client;
 import com.stee.cctv.netty.handler.ServerHandler;
 import com.stee.cctv.netty.server.Server;
 
@@ -34,16 +33,6 @@ public class Initialization {
 			public void run() {
 				try {
 					new Server(serverHandler).run();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-
-		executorService.execute(new Runnable() {
-			public void run() {
-				try {
-					new Client().run();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
