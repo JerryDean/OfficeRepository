@@ -1,9 +1,6 @@
 package com.stee.cctv.test;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -11,10 +8,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.stee.cctv.dao.EqtInfoExtendRepository;
-import com.stee.cctv.dao.EqtInfoRepository;
-import com.stee.cctv.entity.EquipmentInfo;
-import com.stee.cctv.entity.EquipmentInfoExtend;
+import com.stee.cctv.dao.SnapDeviceRepository;
 
 /**
  * Copyright @ 2007, ST Electronics Info-comm Systems PTE. LTD All rights
@@ -50,31 +44,9 @@ public class SpringDataTest {
 	}
 
 	@Test
-	public void testEqtInfoExtend() {
-		EqtInfoExtendRepository extendRepo = ctx.getBean(EqtInfoExtendRepository.class);
-		List<EquipmentInfoExtend> extendList = extendRepo
-				.getEqtExtendByIdInAndUuidNotNull(Arrays.asList("G5601011030314", "G561101011030092"));
-		System.out.println(extendList);
-	}
-
-	@Test
-	public void testEqtInfo() {
-		EqtInfoRepository eqtInfoRepository = ctx.getBean(EqtInfoRepository.class);
-		List<EquipmentInfo> list = eqtInfoRepository.getEQTInfoByDeviceType(3);
-		System.out.println("库存CCTV设备数量:" + list.size());
-	}
-
-	@Test
-	public void testAll() {
-		EqtInfoRepository eqtInfoRepository = ctx.getBean(EqtInfoRepository.class);
-		List<EquipmentInfo> list = eqtInfoRepository.getEQTInfoByDeviceType(3);
-		List<String> idList = new ArrayList<>();
-		for (EquipmentInfo info : list) {
-			idList.add(info.getId());
-		}
-		EqtInfoExtendRepository extendRepo = ctx.getBean(EqtInfoExtendRepository.class);
-		List<EquipmentInfoExtend> extendList = extendRepo.getEqtExtendByIdInAndUuidNotNull(idList);
-		System.out.println(extendList);
+	public void testSnapDevice() {
+		SnapDeviceRepository snapDeviceRepository = ctx.getBean(SnapDeviceRepository.class);
+		System.out.println(snapDeviceRepository.findAll());
 	}
 
 }

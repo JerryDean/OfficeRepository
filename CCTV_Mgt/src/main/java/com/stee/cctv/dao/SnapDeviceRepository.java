@@ -1,11 +1,10 @@
 package com.stee.cctv.dao;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.repository.Repository;
 
-import com.stee.cctv.entity.EquipmentInfoExtend;
+import com.stee.cctv.entity.SnapDeviceInfo;
 
 /**
  * Copyright @ 2007, ST Electronics Info-comm Systems PTE. LTD All rights
@@ -21,6 +20,6 @@ import com.stee.cctv.entity.EquipmentInfoExtend;
  * @version 1.0
  *
  */
-public interface EqtInfoExtendRepository extends Repository<EquipmentInfoExtend, String> {
-	List<EquipmentInfoExtend> getEqtExtendByIdInAndUuidNotNull(Collection<String> idList);
+public interface SnapDeviceRepository extends Repository<SnapDeviceInfo, String> {
+	List<SnapDeviceInfo> findAll();
 }

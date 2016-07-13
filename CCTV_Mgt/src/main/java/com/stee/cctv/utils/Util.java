@@ -20,6 +20,8 @@ import com.stee.dsms.properties.PropertyConfigurer;
  */
 public class Util {
 
+	public static String activeMqAddr = PropertyConfigurer.getContextProperty("ERS.activemq.outternet").toString();;
+
 	/**
 	 * Socket 端口
 	 */

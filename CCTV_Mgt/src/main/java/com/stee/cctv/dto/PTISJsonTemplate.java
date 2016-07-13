@@ -1,10 +1,6 @@
-package com.stee.cctv.dao;
+package com.stee.cctv.dto;
 
 import java.util.List;
-
-import org.springframework.data.repository.Repository;
-
-import com.stee.cctv.entity.EquipmentInfo;
 
 /**
  * Copyright @ 2007, ST Electronics Info-comm Systems PTE. LTD All rights
@@ -20,6 +16,33 @@ import com.stee.cctv.entity.EquipmentInfo;
  * @version 1.0
  *
  */
-public interface EqtInfoRepository extends Repository<EquipmentInfo, String> {
-	List<EquipmentInfo> getEQTInfoByDeviceType(Integer deviceType);
+public class PTISJsonTemplate<T> {
+	private String status;
+	private String error;
+	private List<T> data;
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
+
+	public List<T> getData() {
+		return data;
+	}
+
+	public void setData(List<T> data) {
+		this.data = data;
+	}
+
 }

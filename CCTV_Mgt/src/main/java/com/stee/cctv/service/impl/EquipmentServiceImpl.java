@@ -1,20 +1,21 @@
 package com.stee.cctv.service.impl;
 
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.stee.cctv.dao.EqtInfoExtendRepository;
-import com.stee.cctv.dao.EqtInfoRepository;
+import com.stee.cctv.dao.SnapDeviceRepository;
+import com.stee.cctv.dto.PTISJsonTemplate;
 import com.stee.cctv.dto.SnapInfo;
-import com.stee.cctv.entity.EquipmentInfo;
-import com.stee.cctv.entity.EquipmentInfoExtend;
+import com.stee.cctv.entity.ImageInfo;
+import com.stee.cctv.entity.SnapDeviceInfo;
+import com.stee.cctv.jms.TopicSender;
 import com.stee.cctv.service.IEquipmentService;
 import com.stee.cctv.utils.TimeUtil;
 import com.stee.cctv.utils.Util;
@@ -37,36 +38,56 @@ import com.stee.cctv.utils.Util;
 public class EquipmentServiceImpl implements IEquipmentService {
 
 	@Autowired
-	EqtInfoRepository eqtInfo;
+	SnapDeviceRepository repository;
 
-	@Autowired
-	EqtInfoExtendRepository eqtExtendInfo;
+	TopicSender sender = new TopicSender();
 
 	@Override
 	public List<SnapInfo> getSnapInfoList() {
-		Map<String, String> map = new HashMap<>();
-		List<String> idList = new ArrayList<>();
-		List<EquipmentInfo> infoList = eqtInfo.getEQTInfoByDeviceType(3);
-		for (EquipmentInfo info : infoList) {
-			idList.add(info.getId());
-		}
-		List<EquipmentInfoExtend> extendList = eqtExtendInfo.getEqtExtendByIdInAndUuidNotNull(idList);
-		for (EquipmentInfoExtend extend : extendList) {
-			map.put(extend.getId(), extend.getUuid());
-		}
 
 		List<SnapInfo> list = new ArrayList<>();
-		Iterator<Entry<String, String>> it = map.entrySet().iterator();
+
+		List<SnapDeviceInfo> deviceList = repository.findAll();
+
 		String timeStr = TimeUtil.getCurrentTimeStr();
 		String dateStr = TimeUtil.getTimeByYMD();
-		while (it.hasNext()) {
-			Entry<String, String> entry = it.next();
+
+		List<ImageInfo> imageList = new ArrayList<>();
+
+		for (SnapDeviceInfo info : deviceList) {
 			SnapInfo snapInfo = new SnapInfo();
-			snapInfo.setDeviceId(entry.getValue());
-			snapInfo.setPicName(entry.getKey() + "_" + timeStr + ".jpg");
-			snapInfo.setSavePicPath(Util.FTP_ADDRESS + "/CCTV/" + dateStr + "/" + entry.getKey() + "/");
+			snapInfo.setDeviceId(info.getId());
+			snapInfo.setPicName(info.getDeviceId() + "_" + timeStr + ".jpg");
+			snapInfo.setSavePicPath(Util.FTP_ADDRESS + "/CCTV/" + dateStr + "/" + info.getDeviceId() + "/");
 			list.add(snapInfo);
+			ImageInfo imageInfo = new ImageInfo();
+			imageInfo.setDeviceId(info.getId());
+			imageInfo.setDirection(info.getRoadDirection());
+			imageInfo.setImageName(snapInfo.getPicName());
+			imageInfo.setImageURL(snapInfo.getSavePicPath());
+			imageInfo.setRoadId(info.getRoadId());
+			imageInfo.setStakeNo(info.getRoadStake());
+			imageInfo.setUpdateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			imageList.add(imageInfo);
 		}
+
+		PTISJsonTemplate<ImageInfo> template = new PTISJsonTemplate<>();
+		template.setStatus("ok");
+		template.setData(imageList);
+		template.setError("");
+
+		StringWriter sw = new StringWriter();
+		ObjectMapper om = new ObjectMapper();
+
+		try {
+			om.writeValue(sw, template);
+		} catch (Exception e) {
+			Util.logger.error(e.getMessage());
+		}
+
+		String result = sender.sendJMSMessage(sw.toString(), "TRAFFIC_IMAGE");
+		Util.logger.info(result);
+
 		return list;
 	}
 
