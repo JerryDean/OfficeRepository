@@ -41,9 +41,11 @@ public class MessageDecoder extends ByteToMessageDecoder {
 				lengthByte[2] = nByte[2];
 				lengthByte[3] = nByte[1];
 				int length = ByteUtil.bytesToInt(lengthByte);
+				Util.logger.info("接收数据内容长度：" + length);
 				byte[] contentByte = new byte[length];
 				contentByte = ByteUtil.subBytes(nByte, 5, length);
 				String content = new String(contentByte);
+				Util.logger.info("数据内容：" + content);
 				in.add(content);
 			} else {
 				if (nByte[0] == 0x01) {
@@ -54,6 +56,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
 					lengthByte[2] = nByte[2];
 					lengthByte[3] = nByte[1];
 					PacketUtil.length = ByteUtil.bytesToInt(lengthByte);
+					Util.logger.info("接收数据内容长度：" + PacketUtil.length);
 					byte[] tByte = ByteUtil.subBytes(nByte, 5, nByte.length - 5);
 					PacketUtil.append(new String(tByte));
 				}
@@ -63,7 +66,9 @@ public class MessageDecoder extends ByteToMessageDecoder {
 					String message = PacketUtil.stringBuilder.toString();
 					int msgLen = message.getBytes().length;
 					if (PacketUtil.length != msgLen) {
-						Util.logger.info("数据解析不完全！");
+						Util.logger.info("数据解析不完全！消息体指定内容长度与实际内容长度不一致。");
+					} else {
+						Util.logger.info("数据内容：" + message);
 					}
 					in.add(message);
 				}
