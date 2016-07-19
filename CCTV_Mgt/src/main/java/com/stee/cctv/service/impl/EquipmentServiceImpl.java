@@ -61,7 +61,7 @@ public class EquipmentServiceImpl implements IEquipmentService {
 			snapInfo.setSavePicPath(Util.FTP_ADDRESS + "/CCTV/" + dateStr + "/" + info.getDeviceId() + "/");
 			list.add(snapInfo);
 			ImageInfo imageInfo = new ImageInfo();
-			imageInfo.setDeviceId(info.getId());
+			imageInfo.setDeviceId(info.getDeviceId());
 			imageInfo.setDirection(info.getRoadDirection());
 			imageInfo.setImageName(snapInfo.getPicName());
 			imageInfo.setImageURL(snapInfo.getSavePicPath());
