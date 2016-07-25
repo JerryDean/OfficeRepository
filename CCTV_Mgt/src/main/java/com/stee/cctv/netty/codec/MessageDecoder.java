@@ -66,7 +66,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
 					String message = PacketUtil.stringBuilder.toString();
 					int msgLen = message.getBytes().length;
 					if (PacketUtil.length != msgLen) {
-						Util.logger.info("数据解析不完全！消息体指定内容长度与实际内容长度不一致。");
+						Util.logger.info("数据解析不完全！消息体指定内容长度与实际内容长度不一致。实际取得内容：" + message);
 					} else {
 						Util.logger.info("数据内容：" + message);
 					}

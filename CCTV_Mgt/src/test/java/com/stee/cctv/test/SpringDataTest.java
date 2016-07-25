@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.stee.cctv.dao.EquipmentExtendRepository;
 import com.stee.cctv.dao.SnapDeviceRepository;
 
 /**
@@ -47,6 +48,12 @@ public class SpringDataTest {
 	public void testSnapDevice() {
 		SnapDeviceRepository snapDeviceRepository = ctx.getBean(SnapDeviceRepository.class);
 		System.out.println(snapDeviceRepository.findAll());
+	}
+
+	@Test
+	public void testEquipmentExtend() {
+		EquipmentExtendRepository repository = ctx.getBean(EquipmentExtendRepository.class);
+		System.out.println(repository.findByGuid("1023fe4767cd4381b486a60550d96046"));
 	}
 
 }

@@ -79,5 +79,6 @@
 	<bean id="serverHandler" class="com.stee.cctv.netty.handler.ServerHandler">
 		<constructor-arg name="alarmService" ref="alarmService"></constructor-arg>
 		<constructor-arg name="equipmentService" ref="equipmentService"></constructor-arg>
+		<constructor-arg name="repository" ref="EquipmentExtendRepository"></constructor-arg>
 	</bean>
 </beans>

@@ -59,7 +59,7 @@ public class Util {
 
 	public static final String FAUTY = "Faulty";
 
-	public static final String ALARMCODE = "COM-2";
+	public static final String ALARMCODE = "COM_2";
 
 	/**
 	 * 软件包版本

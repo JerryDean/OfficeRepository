@@ -17,6 +17,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import com.stee.cctv.dao.EquipmentExtendRepository;
 import com.stee.cctv.dto.DeviceStatusResponse;
 import com.stee.cctv.dto.HeartBeat;
 import com.stee.cctv.dto.LoginResponse;
@@ -29,6 +30,7 @@ import com.stee.cctv.utils.XmlUtil;
 import com.stee.cctv.ws.client.Alarm;
 import com.stee.cctv.ws.client.AlarmType;
 
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -46,20 +48,25 @@ import io.netty.channel.ChannelHandlerContext;
  * @version 1.0
  *
  */
+@Sharable
 public class ServerHandler extends ChannelHandlerAdapter {
 
 	IAlarmService alarmService;
 
 	IEquipmentService equipmentService;
 
+	EquipmentExtendRepository repository;
+
 	public ServerHandler() {
 		super();
 	}
 
-	public ServerHandler(IAlarmService alarmService, IEquipmentService equipmentService) {
+	public ServerHandler(IAlarmService alarmService, IEquipmentService equipmentService,
+			EquipmentExtendRepository repository) {
 		super();
 		this.alarmService = alarmService;
 		this.equipmentService = equipmentService;
+		this.repository = repository;
 	}
 
 	ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
@@ -90,6 +97,7 @@ public class ServerHandler extends ChannelHandlerAdapter {
 			try {
 				handleLogin(ctx, msg);
 			} catch (Exception e) {
+				Util.logger.error("处理登录出错：" + e.getMessage());
 				Util.setSessionId(NetAddressUtil.getRemoteIpAddress(ctx));
 				LoginResponse.sessionId = Util.sessionId;
 				LoginResponse.status = Util.BAD_MESSAGE;
@@ -103,6 +111,7 @@ public class ServerHandler extends ChannelHandlerAdapter {
 			try {
 				handleDeviceStatus(ctx, msg);
 			} catch (Exception e) {
+				Util.logger.error("处理设备状态出错：" + e.getMessage());
 				Document doc = DocumentHelper.parseText(String.valueOf(msg));
 				Element el = (Element) doc.selectSingleNode("//SeqNum");
 				DeviceStatusResponse.seqNum = el.getText();
@@ -190,9 +199,11 @@ public class ServerHandler extends ChannelHandlerAdapter {
 	 * @throws DocumentException
 	 */
 	public void handleDeviceStatus(ChannelHandlerContext ctx, Object msg) throws DocumentException {
+		Util.logger.info("开始处理设备状态...");
 		Document doc = DocumentHelper.parseText(String.valueOf(msg));
 		Element element = (Element) doc.selectSingleNode("//SeqNum");
 		DeviceStatusResponse.seqNum = element.getText();
+		Util.logger.info("SeeqNum:" + element.getText());
 		try {
 			getDeviceStatus(doc);
 			DeviceStatusResponse.status = Util.SUCCESS;
@@ -204,6 +215,7 @@ public class ServerHandler extends ChannelHandlerAdapter {
 	}
 
 	public void getDeviceStatus(Document doc) {
+		Util.logger.info("开始解析设备状态...");
 		List<Alarm> list = new ArrayList<>();
 		@SuppressWarnings("unchecked")
 		List<Element> els = doc.selectNodes("//Device");
@@ -220,11 +232,15 @@ public class ServerHandler extends ChannelHandlerAdapter {
 			alarm.setAlarmCode(Util.ALARMCODE);
 			alarm.setAlarmSource("CCTV");
 			alarm.setDetectionTime(convertToXMLGregorianCalendar(new Date()));
-			alarm.setDeviceID(deviceId);
+			alarm.setDeviceID(repository.findByGuid(deviceId).getDeviceId());
+			Util.logger.info("UUID:" + deviceId);
+			Util.logger.info("deviceId:" + repository.findByGuid(deviceId).getDeviceId());
 			alarm.setZoneID(0);
 			list.add(alarm);
 		}
-		alarmService.updateFelsAlarm(AlarmType.NORMAL, list);
+		Util.logger.info("开始调用Alarm接口方法：updateFelsAlarm...");
+		String result = alarmService.updateFelsAlarm(AlarmType.NORMAL, list);
+		Util.logger.info("接口调用返回：" + result);
 	}
 
 	public static XMLGregorianCalendar convertToXMLGregorianCalendar(Date date) {

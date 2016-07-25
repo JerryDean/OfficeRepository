@@ -6,6 +6,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import com.stee.cctv.utils.TimeUtil;
 import com.stee.cctv.utils.Util;
 
 /**
@@ -66,6 +67,8 @@ public class SnapInfo {
 		header.addElement("From").setText(Util.from);
 		header.addElement("System").setText(Util.system);
 		Element body = root.addElement("MessageBody").addAttribute("Type", "1004");
+		body.addElement("SessionId").setText(Util.sessionId);
+		body.addElement("SeqNum").setText(TimeUtil.getCurrentTimeStr());
 		Element all = body.addElement("AllDevices");
 		for (SnapInfo info : list) {
 			Element device = all.addElement("Device");
