@@ -203,7 +203,7 @@ public class ServerHandler extends ChannelHandlerAdapter {
 		Document doc = DocumentHelper.parseText(String.valueOf(msg));
 		Element element = (Element) doc.selectSingleNode("//SeqNum");
 		DeviceStatusResponse.seqNum = element.getText();
-		Util.logger.info("SeeqNum:" + element.getText());
+		Util.logger.info("SeqNum:" + element.getText());
 		try {
 			getDeviceStatus(doc);
 			DeviceStatusResponse.status = Util.SUCCESS;
@@ -232,9 +232,13 @@ public class ServerHandler extends ChannelHandlerAdapter {
 			alarm.setAlarmCode(Util.ALARMCODE);
 			alarm.setAlarmSource("CCTV");
 			alarm.setDetectionTime(convertToXMLGregorianCalendar(new Date()));
-			alarm.setDeviceID(repository.findByGuid(deviceId).getDeviceId());
 			Util.logger.info("UUID:" + deviceId);
-			Util.logger.info("deviceId:" + repository.findByGuid(deviceId).getDeviceId());
+			try {
+				alarm.setDeviceID(repository.findByGuid(deviceId).getDeviceId());
+				Util.logger.info("deviceId:" + repository.findByGuid(deviceId).getDeviceId());
+			} catch (Exception e2) {
+				Util.logger.error("设备库存表未找到对应的设备信息...");
+			}
 			alarm.setZoneID(0);
 			list.add(alarm);
 		}
