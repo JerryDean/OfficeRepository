@@ -1,5 +1,6 @@
 package com.stee.cctv.utils;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
@@ -238,5 +239,41 @@ public class ByteUtil {
 		T[] result = Arrays.copyOf(first, first.length + second.length);
 		System.arraycopy(second, 0, result, first.length, second.length);
 		return result;
+	}
+
+	/**
+	 * 数组转进制显示
+	 * 
+	 * @param bytes
+	 * @param radix
+	 * @return
+	 * @author Jerry
+	 */
+	public static String toBinary(byte[] bytes, int radix) {
+		return new BigInteger(1, bytes).toString(radix);
+	}
+
+	/**
+	 * 二进制转十六进制
+	 * 
+	 * @param bytes
+	 * @return
+	 * @author Jerry
+	 */
+	public static String toHex(byte[] bytes) {
+		String byteStr = toBinary(bytes, 16);
+		int length = bytes.length * 2;
+		if (byteStr.length() < length) {
+			byteStr = "0" + byteStr;
+		}
+		int index = 0;
+		StringBuilder stringBuilder = new StringBuilder();
+		while (true) {
+			stringBuilder.append(byteStr.substring(index, index + 2) + " ");
+			index += 2;
+			if (index >= byteStr.length())
+				break;
+		}
+		return stringBuilder.toString();
 	}
 }

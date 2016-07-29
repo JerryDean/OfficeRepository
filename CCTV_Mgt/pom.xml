@@ -23,6 +23,18 @@
     </plugins>
   </build>
   
+  <repositories>
+  	<repository>
+  		<id>Nexus Repository</id>
+  		<name>Nexus Repository</name>
+  		<snapshots>
+  			<enabled>true</enabled>
+  			<updatePolicy>always</updatePolicy>
+  		</snapshots>
+  		<url>http://192.168.0.92:9999/nexus/content/groups/public</url>
+  	</repository>
+  </repositories>
+  
   <properties>
   	<spring.version>4.0.0.RELEASE</spring.version>
   </properties>
@@ -268,6 +280,12 @@
 	<dependency>
 	    <groupId>org.codehaus.jackson</groupId>
 	    <artifactId>jackson-mapper-asl</artifactId>
+	    <version>1.9.13</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>org.codehaus.jackson</groupId>
+	    <artifactId>jackson-core-asl</artifactId>
 	    <version>1.9.13</version>
 	</dependency>
 	

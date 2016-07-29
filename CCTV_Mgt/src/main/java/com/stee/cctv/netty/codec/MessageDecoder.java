@@ -35,6 +35,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
 			byte[] nByte = new byte[buf.readableBytes()];
 			buf.readBytes(nByte);
 			if (PacketUtil.isCompleted(nByte)) {
+				Util.logger.info("来源：" + ctx.channel().remoteAddress() + ", 报文:" + ByteUtil.toHex(nByte));
 				byte[] lengthByte = new byte[4];
 				lengthByte[0] = nByte[4];
 				lengthByte[1] = nByte[3];
@@ -59,8 +60,10 @@ public class MessageDecoder extends ByteToMessageDecoder {
 					Util.logger.info("接收数据内容长度：" + PacketUtil.length);
 					byte[] tByte = ByteUtil.subBytes(nByte, 5, nByte.length - 5);
 					PacketUtil.append(new String(tByte));
+					Util.logger.info("来源：" + ctx.channel().remoteAddress() + ", 报文:" + ByteUtil.toHex(nByte));
 				}
 				if (nByte[nByte.length - 1] == 0x00) {
+					Util.logger.info(ByteUtil.toHex(nByte));
 					byte[] tByte = ByteUtil.subBytes(nByte, 0, nByte.length - 1);
 					PacketUtil.append(new String(tByte));
 					String message = PacketUtil.stringBuilder.toString();
@@ -73,6 +76,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
 					in.add(message);
 				}
 				if (nByte[0] != 0x01 && nByte[nByte.length - 1] != 0x00) {
+					Util.logger.info(ByteUtil.toHex(nByte));
 					PacketUtil.append(new String(nByte));
 				}
 			}
