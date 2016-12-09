@@ -1,5 +1,8 @@
 package com.stee.asm.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,8 +60,10 @@ public class PoleModelController {
 	 * @author Jerry
 	 */
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String save(@RequestBody PoleModelConfig config) {
-		return poleService.save(config);
+	public Map<String, String> save(@RequestBody PoleModelConfig config) {
+		Map<String, String> map = new HashMap<>();
+		map.put("status", poleService.save(config));
+		return map;
 	}
 
 	// TODO Delete...
@@ -88,7 +93,15 @@ public class PoleModelController {
 	 * @author Jerry
 	 */
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-	public String delete(@PathVariable("id") String id) {
-		return poleService.delete(id);
+	public Map<String, String> delete(@PathVariable("id") Integer id) {
+		Map<String, String> map = new HashMap<>();
+		map.put("status", poleService.delete(id));
+		return map;
+	}
+
+	@RequestMapping(value = "/query/name/like", method = RequestMethod.POST)
+	public ResultData<PoleModelConfig> findByNameLike(@RequestBody String name) {
+		System.out.println(name);
+		return poleService.findByNameLike(name);
 	}
 }

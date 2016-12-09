@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.stee.asm.entity.QueryBean;
 import com.stee.asm.repository.LifetimeTrackingRepository;
 import com.stee.asm.service.ILifetimeTrackingService;
 import com.stee.sel.asm.LifetimeTrackingConfig;
@@ -61,9 +62,29 @@ public class LifetimeTrackingServiceImpl implements ILifetimeTrackingService {
 	}
 
 	@Override
-	public Page<LifetimeTrackingConfig> getByPage(Integer pageNo, Integer pageSize, String direction) {
+	public Page<LifetimeTrackingConfig> getByPage(QueryBean query, Integer pageNo, Integer pageSize, String direction) {
 		PageRequest request = new PageRequest(pageNo == null ? 0 : pageNo, pageSize == null ? 15 : pageSize);
-		return repository.findAll(request);
+		if (null != query) {
+			String query2 = query.getQuery();
+			if (null != query2 && !query2.equals("")) {
+				return repository.findByNameLike(query2, request);
+			} else {
+				return repository.findAll(request);
+			}
+		} else {
+			return repository.findAll(request);
+		}
+	}
+
+	@Override
+	public String deleteByName(Integer id) {
+		try {
+			repository.delete(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseCode.FAILED.getCode();
+		}
+		return ResponseCode.SUCCESS.getCode();
 	}
 
 }

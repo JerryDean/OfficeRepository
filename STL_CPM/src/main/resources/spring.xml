@@ -54,7 +54,7 @@
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"></bean>			
 		</property>
-		<property name="packagesToScan" value="com.stee.sel"></property>
+		<property name="packagesToScan" value="com.stee.sel.cpm"></property>
 		<property name="jpaProperties">
 			<props>
 				<prop key="hibernate.show_sql">true</prop>

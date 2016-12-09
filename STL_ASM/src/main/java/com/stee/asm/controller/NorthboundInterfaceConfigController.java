@@ -1,5 +1,6 @@
 package com.stee.asm.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +45,10 @@ public class NorthboundInterfaceConfigController {
 	 * @author Jerry
 	 */
 	@RequestMapping(value = "/set", method = RequestMethod.POST)
-	public String doConfig(@RequestBody String json) {
-		return service.doConfig(json);
+	public Map<String, String> doConfig(@RequestBody String json) {
+		Map<String, String> map = new HashMap<>();
+		map.put("status", service.doConfig(json));
+		return map;
 	}
 
 	/**

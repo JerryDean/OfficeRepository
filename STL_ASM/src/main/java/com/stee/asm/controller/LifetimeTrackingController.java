@@ -1,5 +1,8 @@
 package com.stee.asm.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.stee.asm.entity.QueryBean;
 import com.stee.asm.service.ILifetimeTrackingService;
 import com.stee.sel.asm.LifetimeTrackingConfig;
 
@@ -38,24 +42,35 @@ public class LifetimeTrackingController {
 	@Autowired
 	ILifetimeTrackingService service;
 
-	@RequestMapping(value = "/pagingAndSort", method = RequestMethod.GET)
-	public Page<LifetimeTrackingConfig> getByPage(@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+	@RequestMapping(value = "/pagingAndSort", method = RequestMethod.POST)
+	public Page<LifetimeTrackingConfig> getByPage(@RequestBody(required = false) QueryBean query,
+			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "15") Integer pageSize,
 			@RequestParam(name = "sort", required = false) String direction) {
 		System.out.println(pageNo);
 		System.out.println(pageSize);
 		System.out.println(direction);
-		return service.getByPage(pageNo, pageSize, direction);
+		return service.getByPage(query, pageNo, pageSize, direction);
 	}
 
 	@RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST)
-	public String save(@RequestBody LifetimeTrackingConfig config) {
+	public Map<String, String> save(@RequestBody LifetimeTrackingConfig config) {
 		System.out.println(config);
-		return service.save(config);
+		Map<String, String> map = new HashMap<>();
+		map.put("status", service.save(config));
+		return map;
 	}
 
 	@RequestMapping(value = "/isNameExits/{name}", method = RequestMethod.GET)
 	public boolean isNameExits(@PathVariable("name") String name) {
 		return service.isNameExits(name);
 	}
+
+	@RequestMapping(value = "/deleteById/{id}", method = RequestMethod.DELETE)
+	Map<String, String> deleteByName(@PathVariable("id") Integer id) {
+		Map<String, String> map = new HashMap<>();
+		map.put("status", service.deleteByName(id));
+		return map;
+	}
+
 }

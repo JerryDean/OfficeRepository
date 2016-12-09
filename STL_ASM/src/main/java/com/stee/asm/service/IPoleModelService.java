@@ -31,6 +31,8 @@ public interface IPoleModelService {
 
 	boolean isNameExits(String name);
 
-	String delete(String id);
+	String delete(Integer id);
+
+	ResultData<PoleModelConfig> findByNameLike(String name);
 
 }

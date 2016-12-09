@@ -80,7 +80,7 @@ public class PoleModelServiceImpl implements IPoleModelService {
 	}
 
 	@Override
-	public String delete(String id) {
+	public String delete(Integer id) {
 		try {
 			repository.delete(id);
 		} catch (Exception e) {
@@ -88,6 +88,24 @@ public class PoleModelServiceImpl implements IPoleModelService {
 			return ResponseCode.FAILED.getCode();
 		}
 		return ResponseCode.SUCCESS.getCode();
+	}
+
+	@Override
+	public ResultData<PoleModelConfig> findByNameLike(String name) {
+		ResultData<PoleModelConfig> resultData = new ResultData<>();
+		if (null == name || name.equals("")) {
+			resultData.setStatus(ResponseCode.ERROR_PARAM.getCode());
+		}
+		try {
+			List<PoleModelConfig> findByNameLike = repository.findByNameLike(name);
+			resultData.setStatus(ResponseCode.SUCCESS.getCode());
+			resultData.setData(findByNameLike);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.setStatus(ResponseCode.FAILED.getCode());
+		}
+
+		return resultData;
 	}
 
 }

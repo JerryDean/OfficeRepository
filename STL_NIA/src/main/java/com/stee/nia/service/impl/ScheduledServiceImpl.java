@@ -208,7 +208,7 @@ public class ScheduledServiceImpl implements IScheduledService {
 				String controlProtocol = "";
 				try {
 					String moduleId = lampInfo.getModuleId();
-					LuminaireModelConfig luminaire = luminaireRepo.findOne(moduleId);
+					LuminaireModelConfig luminaire = luminaireRepo.findByModelId(moduleId);
 					controlProtocol = luminaire.getControlProtocol();
 				} catch (Exception e) {
 					e.printStackTrace();

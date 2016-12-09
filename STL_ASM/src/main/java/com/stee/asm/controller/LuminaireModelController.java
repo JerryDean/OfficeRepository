@@ -1,5 +1,8 @@
 package com.stee.asm.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,9 +60,10 @@ public class LuminaireModelController {
 	 * @author Jerry
 	 */
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String save(@RequestBody LuminaireModelConfig config) {
-		System.out.println(config);
-		return luminaireService.save(config);
+	public Map<String, String> save(@RequestBody LuminaireModelConfig config) {
+		Map<String, String> map = new HashMap<>();
+		map.put("status", luminaireService.save(config));
+		return map;
 	}
 
 	// TODO delete...
@@ -89,8 +93,15 @@ public class LuminaireModelController {
 	 * @author Jerry
 	 */
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-	public String delete(@PathVariable("id") Integer id) {
-		return luminaireService.delete(id);
+	public Map<String, String> delete(@PathVariable("id") Integer id) {
+		Map<String, String> map = new HashMap<>();
+		map.put("status", luminaireService.delete(id));
+		return map;
 	}
 
+	@RequestMapping(value = "/query/modelId/like", method = RequestMethod.POST)
+	public ResultData<LuminaireModelConfig> findByModelIdLike(@RequestBody String modelId) {
+		System.out.println(modelId);
+		return luminaireService.findByModelIdLike(modelId);
+	}
 }

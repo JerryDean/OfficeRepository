@@ -1,5 +1,7 @@
 package com.stee.asm.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.stee.sel.asm.PoleModelConfig;
@@ -24,6 +26,6 @@ import com.stee.sel.asm.PoleModelConfig;
  * --------------------------------------------------------------------------------
  *  
  */
-public interface PoleModelRepository extends JpaRepository<PoleModelConfig, String> {
-
+public interface PoleModelRepository extends JpaRepository<PoleModelConfig, Integer> {
+	List<PoleModelConfig> findByNameLike(String name);
 }

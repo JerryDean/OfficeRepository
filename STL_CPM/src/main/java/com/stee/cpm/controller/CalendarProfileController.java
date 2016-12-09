@@ -1,5 +1,7 @@
 package com.stee.cpm.controller;
 
+import java.util.Set;
+
 import javax.annotation.Resource;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.common.collect.Sets;
+import com.stee.cpm.dto.Daily2Draw;
 import com.stee.cpm.entity.Calendar2Draw;
 import com.stee.cpm.entity.Config;
 import com.stee.cpm.service.ICalendarProfileService;
@@ -83,6 +87,43 @@ public class CalendarProfileController {
 	@RequestMapping(value = "/get/calendar2draw", method = RequestMethod.POST)
 	public Calendar2Draw getCalendar2Draw(@RequestBody Config config) {
 		return service.getCalendar2Draw(config);
+	}
+
+	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	Set<Daily2Draw> demoCalendar() {
+		Set<Daily2Draw> set = Sets.newHashSet();
+		for (int i = 0; i < 5; i++) {
+			Daily2Draw daily2Draw = new Daily2Draw();
+			switch (i) {
+			case 0:
+				daily2Draw.setTitle("DP 00" + (i + 1));
+				daily2Draw.setStart("2016-12-09");
+				daily2Draw.setColor("#f8cb00");
+				break;
+			case 1:
+				daily2Draw.setTitle("DP 00" + (i + 1));
+				daily2Draw.setStart("2016-12-13");
+				daily2Draw.setColor("#9b59b6");
+				break;
+			case 2:
+				daily2Draw.setTitle("DP 00" + (i + 1));
+				daily2Draw.setStart("2016-12-17");
+				daily2Draw.setColor("#f3565d");
+				break;
+			case 3:
+				daily2Draw.setTitle("DP 00" + (i + 1));
+				daily2Draw.setStart("2016-12-24");
+				daily2Draw.setColor("#1bbc9b");
+				break;
+			case 4:
+				daily2Draw.setTitle("DP 00" + (i + 1));
+				daily2Draw.setStart("2016-12-25");
+				daily2Draw.setColor("#1bbc9b");
+				break;
+			}
+			set.add(daily2Draw);
+		}
+		return set;
 	}
 
 }

@@ -1,7 +1,11 @@
 package com.stee.lim.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,10 +89,46 @@ public class LampInfoServiceImpl implements ILampInfoService {
 	@Override
 	public String updateGz(Map<String, String> map) {
 		try {
-			map.forEach((k, v) -> {
-				LampInfo findOne = repository.findOne(k);
-				findOne.setGeoZoneId(v);
-			});
+			Map<String, String> tempMap = new HashMap<>();
+			tempMap.putAll(map);
+			Iterator<Entry<String, String>> iterator = map.entrySet().iterator();
+			List<LampInfo> compareLamps = new ArrayList<>();
+			if (iterator.hasNext()) {
+				Entry<String, String> next = iterator.next();
+				String value = next.getValue();
+				List<LampInfo> byGeoZoneId = this.getByGeoZoneId(value);
+				if (null != byGeoZoneId) {
+					if (byGeoZoneId.size() > map.size()) {
+						Iterator<Entry<String, String>> iterator2 = tempMap.entrySet().iterator();
+						while (iterator2.hasNext()) {
+							Entry<String, String> next2 = iterator2.next();
+							String key = next2.getKey();
+							for (LampInfo lampInfo : byGeoZoneId) {
+								String id = lampInfo.getId();
+
+								if (key.equals(id)) {
+									System.out.println(id);
+									compareLamps.add(lampInfo);
+								}
+							}
+						}
+						byGeoZoneId.removeAll(compareLamps);
+						System.out.println(byGeoZoneId);
+						for (LampInfo lampInfo : byGeoZoneId) {
+							lampInfo.setGeoZoneId(null);
+						}
+						repository.save(byGeoZoneId);
+					} else {
+						map.forEach((k, v) -> {
+							LampInfo findOne = repository.findOne(k);
+							findOne.setGeoZoneId(v);
+							repository.save(findOne);
+						});
+					}
+				}
+			} else {
+				return ResponseCode.ERROR_PARAM.getCode();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseCode.FAILED.getCode();

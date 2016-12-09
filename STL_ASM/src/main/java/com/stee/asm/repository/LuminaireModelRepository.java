@@ -1,5 +1,7 @@
 package com.stee.asm.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.stee.sel.asm.LuminaireModelConfig;
@@ -25,5 +27,5 @@ import com.stee.sel.asm.LuminaireModelConfig;
  *  
  */
 public interface LuminaireModelRepository extends JpaRepository<LuminaireModelConfig, Integer> {
-
+	List<LuminaireModelConfig> findByModelIdLike(String modelId);
 }

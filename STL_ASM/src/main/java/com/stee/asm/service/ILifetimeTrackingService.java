@@ -2,6 +2,7 @@ package com.stee.asm.service;
 
 import org.springframework.data.domain.Page;
 
+import com.stee.asm.entity.QueryBean;
 import com.stee.sel.asm.LifetimeTrackingConfig;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
@@ -30,6 +31,8 @@ public interface ILifetimeTrackingService {
 
 	boolean isNameExits(String name);
 
-	Page<LifetimeTrackingConfig> getByPage(Integer pageNo, Integer pageSize, String direction);
+	Page<LifetimeTrackingConfig> getByPage(QueryBean query, Integer pageNo, Integer pageSize, String direction);
+
+	String deleteByName(Integer id);
 
 }

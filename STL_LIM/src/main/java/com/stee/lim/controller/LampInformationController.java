@@ -6,12 +6,16 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import com.stee.lim.dto.DownloadFile;
 import com.stee.lim.dto.GeoZoneLampInfo;
 import com.stee.lim.service.ILampInfoService;
 import com.stee.sel.common.ResultData;
@@ -45,6 +49,11 @@ public class LampInformationController {
 	ILampInfoService service;
 
 	private static boolean flag = false;
+
+	@RequestMapping(value = "/asset/import", method = RequestMethod.POST)
+	void getAssetFileList(List<String> locations) {
+
+	}
 
 	/**
 	 * 获取所有LampInfo信息，列表展示 *待分页
@@ -90,6 +99,7 @@ public class LampInformationController {
 	@RequestMapping(value = "/geozone/devices", method = RequestMethod.POST)
 	public String receiveDevices(@RequestBody Map<String, String> map) {
 		// Key: DeviceId Value:GeozoneId
+		System.out.println(map);
 		return service.updateGz(map);
 	}
 
@@ -162,5 +172,29 @@ public class LampInformationController {
 	@RequestMapping(value = "/get/lamps/byGeoZoneId/{id}", method = RequestMethod.GET)
 	public List<LampInfo> getByGeoZoneId(@PathVariable("id") String geoZoneId) {
 		return service.getByGeoZoneId(geoZoneId);
+	}
+
+	/**
+	 * 资产导入
+	 * 
+	 * @param file
+	 * @author Jerry
+	 */
+	@RequestMapping(value = "/upload/asset", consumes = {
+			MediaType.MULTIPART_FORM_DATA_VALUE }, method = RequestMethod.POST)
+	void uploadAsset(@RequestParam("fileUpload") CommonsMultipartFile file) {
+		// TODO Implement indeed.
+	}
+
+	/**
+	 * 资产导出
+	 * 
+	 * @return
+	 * @author Jerry
+	 */
+	@RequestMapping(value = "/download/assets", method = RequestMethod.GET)
+	List<DownloadFile> downloadAssets() {
+		// TODO Implement indeed.
+		return null;
 	}
 }

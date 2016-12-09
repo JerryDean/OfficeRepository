@@ -401,7 +401,7 @@ public class RealtimeConfigClient {
 		if (!allLamp.isEmpty()) {
 			allLamp.forEach(lamp -> {
 				String moduleId = lamp.getModuleId();
-				LuminaireModelConfig luminaire = luminaireRepo.findOne(moduleId);
+				LuminaireModelConfig luminaire = luminaireRepo.findByModelId(moduleId);
 				if (null == luminaire) {
 					return;
 				}

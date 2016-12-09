@@ -24,6 +24,6 @@ import com.stee.sel.asm.LuminaireModelConfig;
  * --------------------------------------------------------------------------------
  *  
  */
-public interface LuminaireRepository extends JpaRepository<LuminaireModelConfig, String> {
-
+public interface LuminaireRepository extends JpaRepository<LuminaireModelConfig, Integer> {
+	LuminaireModelConfig findByModelId(String modelId);
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.stee.asm.repository.LifetimeTrackingRepository;
 import com.stee.asm.repository.LuminaireModelRepository;
 import com.stee.asm.service.ILuminaireModelService;
 import com.stee.sel.asm.LuminaireModelConfig;
@@ -35,6 +36,9 @@ import com.stee.sel.constant.ResponseCode;
 public class LuminaireModelServiceImpl implements ILuminaireModelService {
 	@Autowired
 	LuminaireModelRepository repository;
+
+	@Autowired
+	LifetimeTrackingRepository lifetimeRepo;
 
 	@Override
 	public ResultData<LuminaireModelConfig> getAll() {
@@ -73,12 +77,36 @@ public class LuminaireModelServiceImpl implements ILuminaireModelService {
 	@Override
 	public String delete(Integer id) {
 		try {
+			LuminaireModelConfig findOne = repository.findOne(id);
+			String modelId = findOne.getModelId();
+			if (null != modelId && !modelId.equals("")) {
+				lifetimeRepo.deleteByConfigId(modelId);
+			}
 			repository.delete(id);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseCode.FAILED.getCode();
 		}
 		return ResponseCode.SUCCESS.getCode();
+	}
+
+	@Override
+	public ResultData<LuminaireModelConfig> findByModelIdLike(String modelId) {
+		ResultData<LuminaireModelConfig> resultData = new ResultData<>();
+		if (null == modelId || modelId.equals("")) {
+			resultData.setStatus(ResponseCode.ERROR_PARAM.getCode());
+			return resultData;
+		}
+		try {
+			List<LuminaireModelConfig> findByModelIdLike = repository.findByModelIdLike(modelId);
+			resultData.setStatus(ResponseCode.SUCCESS.getCode());
+			resultData.setData(findByModelIdLike);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.setStatus(ResponseCode.FAILED.getCode());
+		}
+
+		return resultData;
 	}
 
 }

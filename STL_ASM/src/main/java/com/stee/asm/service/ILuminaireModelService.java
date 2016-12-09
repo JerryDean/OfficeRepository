@@ -33,4 +33,6 @@ public interface ILuminaireModelService {
 
 	String delete(Integer id);
 
+	ResultData<LuminaireModelConfig> findByModelIdLike(String modelId);
+
 }
