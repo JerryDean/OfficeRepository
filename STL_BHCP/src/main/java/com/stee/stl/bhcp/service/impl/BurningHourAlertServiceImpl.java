@@ -1,13 +1,11 @@
 package com.stee.stl.bhcp.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
+import com.stee.sel.lfm.BurningHourAlert;
+import com.stee.stl.bhcp.entity.QueryBean;
+import com.stee.stl.bhcp.repository.BurningHourAlertRepository;
+import com.stee.stl.bhcp.repository.LampInfoRepository;
+import com.stee.stl.bhcp.repository.LifetimeRepository;
+import com.stee.stl.bhcp.service.IBurningHourAlertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,10 +14,12 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import com.stee.sel.bhcp.BurningHourAlert;
-import com.stee.stl.bhcp.entity.QueryBean;
-import com.stee.stl.bhcp.repository.BurningHourAlertRepository;
-import com.stee.stl.bhcp.service.IBurningHourAlertService;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.List;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -47,6 +47,12 @@ public class BurningHourAlertServiceImpl implements IBurningHourAlertService {
 	@Autowired
 	BurningHourAlertRepository repository;
 
+	@Autowired
+    LampInfoRepository lampRepo;
+
+	@Autowired
+    LifetimeRepository lifetimeRepo;
+
 	@Override
 	public Page<BurningHourAlert> getAlertPage(QueryBean query, Integer pageNo, Integer pageSize, String direction) {
 
@@ -60,6 +66,11 @@ public class BurningHourAlertServiceImpl implements IBurningHourAlertService {
 					request);
 		}
 		return page;
+	}
+
+	@Override
+	public void computeBurningHourAlert() {
+
 	}
 
 	private Specification<BurningHourAlert> where(final String moduleId, final Integer start, final Integer end) {

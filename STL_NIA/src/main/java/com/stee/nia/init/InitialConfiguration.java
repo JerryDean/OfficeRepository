@@ -1,19 +1,18 @@
 package com.stee.nia.init;
 
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
+import com.stee.nia.client.RealtimeConfigClient;
+import com.stee.nia.repository.ConnectionParamsRepository;
+import com.stee.sel.nia.ConnectionParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.stee.nia.client.RealtimeConfigClient;
-import com.stee.nia.repository.ConnectionParamsRepository;
-import com.stee.sel.nia.ConnectionParams;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -39,6 +38,7 @@ import com.stee.sel.nia.ConnectionParams;
 public class InitialConfiguration implements CommandLineRunner {
 	@Autowired
 	ConnectionParamsRepository repository;
+
 
 	private static RealtimeConfigClient client = new RealtimeConfigClient();
 

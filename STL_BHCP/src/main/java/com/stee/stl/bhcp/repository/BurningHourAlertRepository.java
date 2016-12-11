@@ -1,9 +1,8 @@
 package com.stee.stl.bhcp.repository;
 
+import com.stee.sel.lfm.BurningHourAlert;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
-
-import com.stee.sel.bhcp.BurningHourAlert;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.

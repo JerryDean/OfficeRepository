@@ -2,7 +2,7 @@ package com.stee.stl.bhcp.service;
 
 import org.springframework.data.domain.Page;
 
-import com.stee.sel.bhcp.BurningHourAlert;
+import com.stee.sel.lfm.BurningHourAlert;
 import com.stee.stl.bhcp.entity.QueryBean;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
@@ -29,4 +29,5 @@ public interface IBurningHourAlertService {
 
 	Page<BurningHourAlert> getAlertPage(QueryBean query, Integer pageNo, Integer pageSize, String direction);
 
+    void computeBurningHourAlert();
 }

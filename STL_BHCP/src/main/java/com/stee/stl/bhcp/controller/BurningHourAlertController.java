@@ -2,13 +2,14 @@ package com.stee.stl.bhcp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.stee.sel.bhcp.BurningHourAlert;
+import com.stee.sel.lfm.BurningHourAlert;
 import com.stee.stl.bhcp.entity.QueryBean;
 import com.stee.stl.bhcp.service.IBurningHourAlertService;
 
@@ -45,6 +46,13 @@ public class BurningHourAlertController {
 			@RequestParam(name = "sort", defaultValue = "DESC") String direction) {
 		System.out.println(query);
 		return service.getAlertPage(query, pageNo, pageSize, direction);
+	}
+
+	@JmsListener(destination = "rolling.status")
+	public void receiveMsg (boolean flag) {
+		if (flag) {
+			service.computeBurningHourAlert();
+		}
 	}
 
 }

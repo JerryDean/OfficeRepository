@@ -14,7 +14,7 @@
 	<context:annotation-config/>
 	
 	<!-- 开启包扫描 -->
-	<context:component-scan base-package="com.stee.stl.bhcp,com.stee.sel" />
+	<context:component-scan base-package="com.stee.stl.bhcp" />
 	
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
@@ -53,7 +53,7 @@
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"></bean>			
 		</property>
-		<property name="packagesToScan" value="com.stee.sel.bhcp"></property>
+		<property name="packagesToScan" value="com.stee.sel.lfm"></property>
 		<property name="jpaProperties">
 			<props>
 				<prop key="hibernate.show_sql">true</prop>
