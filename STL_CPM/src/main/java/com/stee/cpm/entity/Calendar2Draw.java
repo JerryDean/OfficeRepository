@@ -12,7 +12,7 @@ import java.util.List;
  * the contract or license agreement with ST Electronics Info-Comm Systems PTE. LTD.
  *
  * Project Name : STL_CPM
- * File Name    : Calendar2Draw.java
+ * File Name    : Calendar2Draw2.java
  * Author       : Jerry
  * Created      : 2016年10月25日 下午4:59:40
  *
@@ -35,7 +35,7 @@ public class Calendar2Draw {
 
 	@Override
 	public String toString() {
-		return "Calendar2Draw [calendarProfiles=" + calendarProfiles + "]";
+		return "Calendar2Draw2 [calendarProfiles=" + calendarProfiles + "]";
 	}
 
 }

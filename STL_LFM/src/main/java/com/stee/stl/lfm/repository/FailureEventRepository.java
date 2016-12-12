@@ -1,5 +1,6 @@
 package com.stee.stl.lfm.repository;
 
+import com.stee.sel.lfm.EventSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -29,5 +30,5 @@ import com.stee.sel.lfm.FailureEvent;
  */
 public interface FailureEventRepository
 		extends PagingAndSortingRepository<FailureEvent, Integer>, JpaSpecificationExecutor<FailureEvent> {
-	Page<FailureEvent> findByEventSource(String eventSource, Pageable pageable);
+	Page<FailureEvent> findByEventSource(EventSource eventSource, Pageable pageable);
 }

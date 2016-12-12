@@ -1,32 +1,21 @@
 package com.stee.cpm.service.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import com.stee.cpm.entity.Calendar2Draw;
-import com.stee.cpm.entity.CalendarProfile2Draw;
-import com.stee.cpm.entity.Config;
-import com.stee.cpm.entity.DailyProfile2Draw;
-import com.stee.cpm.entity.DailyProfiles2Draw;
-import com.stee.cpm.entity.PriorityColor;
-import com.stee.cpm.entity.RecurrentPattern;
+import com.google.common.collect.Sets;
+import com.stee.cpm.dto.Daily2Draw;
+import com.stee.cpm.entity.*;
 import com.stee.cpm.repository.CalendarProfileRepository;
 import com.stee.cpm.service.ICalendarProfileService;
 import com.stee.sel.common.ResultData;
 import com.stee.sel.constant.ResponseCode;
 import com.stee.sel.cpm.CalendarProfile;
 import com.stee.sel.cpm.SchedulingRule;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -317,6 +306,22 @@ public class CalendarProfileServiceImpl implements ICalendarProfileService {
 		String url = bundle.getString("nia.rest.url");
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.postForLocation(url, cp);
+	}
+
+	@Override
+	public Set<Daily2Draw> getCalendar2Draw(Integer calendarId) {
+        Set<Daily2Draw> c2d =  Sets.newHashSet();
+        if (null != calendarId && !calendarId.equals("")) {
+            CalendarProfile cp = repository.findOne(calendarId);
+            List<SchedulingRule> rules = cp.getRules();
+            if (null != rules && !rules.isEmpty()) {
+                rules.forEach(rule -> {
+                    Daily2Draw daily2Draw = new Daily2Draw();
+
+                });
+            }
+        }
+        return null;
 	}
 
 }

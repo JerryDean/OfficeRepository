@@ -1,5 +1,6 @@
 package com.stee.stl.lfm.service.impl;
 
+import com.stee.sel.lfm.EventSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,10 +40,13 @@ public class FailureEventServiceImpl implements IFailureEventService {
 	@Override
 	public Page<FailureEvent> findByEventSource(String es, Integer pageNo, Integer pageSize, String direction) {
 		Page<FailureEvent> page = null;
+		if (direction == null) {
+			direction = "DESC";
+		}
 		PageRequest pageRequest = new PageRequest(pageNo, pageSize,
-				new Sort(direction == "DESC" ? Direction.DESC : Direction.ASC, "severityLevel"));
+				new Sort(direction.equals("DESC") ? Direction.DESC : Direction.ASC, "severityLevel"));
 		if (!es.equals("none")) {
-			page = repository.findByEventSource(es, pageRequest);
+			page = repository.findByEventSource(EventSource.valueOf(es), pageRequest);
 		} else {
 			page = repository.findAll(pageRequest);
 		}

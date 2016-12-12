@@ -45,7 +45,8 @@ public class FailureEventController {
 			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "15") Integer pageSize,
 			@RequestParam(name = "sort", defaultValue = "DESC") String direction) {
-		return service.findByEventSource(es, pageNo, pageSize, direction);
+        System.out.printf(es);
+        return service.findByEventSource(es, pageNo, pageSize, direction);
 	}
 
 	@RequestMapping(value = "/fetch/enum", method = RequestMethod.GET)

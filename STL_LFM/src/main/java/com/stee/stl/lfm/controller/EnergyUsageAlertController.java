@@ -43,6 +43,7 @@ public class EnergyUsageAlertController {
 			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "15") Integer pageSize,
 			@RequestParam(name = "sort", defaultValue = "DESC") String direction) {
+		System.out.println(query);
 		return service.getAlertPage(query, pageNo, pageSize, direction);
 	}
 }
