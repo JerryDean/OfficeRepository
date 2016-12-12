@@ -1,15 +1,14 @@
 package com.stee.nia.service.impl;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.stee.nia.client.RealtimeConfigClient;
 import com.stee.nia.model.realtime.Commands;
 import com.stee.nia.model.realtime.Set;
 import com.stee.nia.service.IRealTimeService;
 import com.stee.sel.lcm.ConfigCommand;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -54,11 +53,11 @@ public class RealTimeServiceImpl implements IRealTimeService {
 			set.setValue(String.valueOf(cc.getLampLevel()));
 			list.add(set);
 		}
-		Set set = new Set();
-		set.setId(id);
-		set.setMeaning("LampCommandSwitch");
-		set.setValue(cc.isLampSwitch() == false ? String.valueOf(0) : String.valueOf(100));
-		list.add(set);
+//		Set set = new Set();
+//		set.setId(id);
+//		set.setMeaning("LampCommandSwitch");
+//		set.setValue(cc.isLampSwitch() == false ? String.valueOf(0) : String.valueOf(100));
+//		list.add(set);
 		commands.setSet(list);
 		String response = "Can not connect to NMS...";
 		response = client.sendRealTime(commands);

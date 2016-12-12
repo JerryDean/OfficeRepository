@@ -1,9 +1,7 @@
 package com.stee.cpm.controller;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.stee.cpm.dto.Calendar2Draw2;
-import com.stee.cpm.dto.Daily2Draw;
+import com.stee.cpm.dto.CalendarToDraw;
 import com.stee.cpm.entity.Calendar2Draw;
 import com.stee.cpm.entity.Config;
 import com.stee.cpm.service.ICalendarProfileService;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Map;
-import java.util.Set;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -88,45 +85,45 @@ public class CalendarProfileController {
     }
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
-    Calendar2Draw2 demoCalendar(@RequestParam("calendarId") Integer calendarId) {
-//        return service.getCalendar2Draw(calendarId);
-        Calendar2Draw2 calendar2Draw2 = new Calendar2Draw2();
-        calendar2Draw2.setStartDate("2016-12");
-        calendar2Draw2.setEndDate("2017-02");
-        Set<Daily2Draw> set = Sets.newHashSet();
-        for (int i = 0; i < 5; i++) {
-            Daily2Draw daily2Draw = new Daily2Draw();
-            switch (i) {
-                case 0:
-                    daily2Draw.setTitle("DP 00" + (i + 1));
-                    daily2Draw.setStart("2016-12-09");
-                    daily2Draw.setColor("#f8cb00");
-                    break;
-                case 1:
-                    daily2Draw.setTitle("DP 00" + (i + 1));
-                    daily2Draw.setStart("2016-12-13");
-                    daily2Draw.setColor("#9b59b6");
-                    break;
-                case 2:
-                    daily2Draw.setTitle("DP 00" + (i + 1));
-                    daily2Draw.setStart("2016-12-17");
-                    daily2Draw.setColor("#f3565d");
-                    break;
-                case 3:
-                    daily2Draw.setTitle("DP 00" + (i + 1));
-                    daily2Draw.setStart("2016-12-24");
-                    daily2Draw.setColor("#1bbc9b");
-                    break;
-                case 4:
-                    daily2Draw.setTitle("DP 00" + (i + 1));
-                    daily2Draw.setStart("2016-12-25");
-                    daily2Draw.setColor("#1bbc9b");
-                    break;
-            }
-            set.add(daily2Draw);
-        }
-        calendar2Draw2.setD2ds(set);
-        return calendar2Draw2;
+    CalendarToDraw getCalendar2Draw (@RequestParam("calendarId") Integer calendarId) {
+        return service.getCalendar2Draw(calendarId);
+//        CalendarToDraw calendarToDraw = new CalendarToDraw();
+//        calendarToDraw.setStartDate("2016-12");
+//        calendarToDraw.setEndDate("2017-02");
+//        Set<Daily2Draw> set = Sets.newHashSet();
+//        for (int i = 0; i < 5; i++) {
+//            Daily2Draw daily2Draw = new Daily2Draw();
+//            switch (i) {
+//                case 0:
+//                    daily2Draw.setTitle("DP 00" + (i + 1));
+//                    daily2Draw.setStart("2016-12-09");
+//                    daily2Draw.setColor("#f8cb00");
+//                    break;
+//                case 1:
+//                    daily2Draw.setTitle("DP 00" + (i + 1));
+//                    daily2Draw.setStart("2016-12-13");
+//                    daily2Draw.setColor("#9b59b6");
+//                    break;
+//                case 2:
+//                    daily2Draw.setTitle("DP 00" + (i + 1));
+//                    daily2Draw.setStart("2016-12-17");
+//                    daily2Draw.setColor("#f3565d");
+//                    break;
+//                case 3:
+//                    daily2Draw.setTitle("DP 00" + (i + 1));
+//                    daily2Draw.setStart("2016-12-24");
+//                    daily2Draw.setColor("#1bbc9b");
+//                    break;
+//                case 4:
+//                    daily2Draw.setTitle("DP 00" + (i + 1));
+//                    daily2Draw.setStart("2016-12-25");
+//                    daily2Draw.setColor("#1bbc9b");
+//                    break;
+//            }
+//            set.add(daily2Draw);
+//        }
+//        calendarToDraw.setD2ds(set);
+//        return calendarToDraw;
     }
 
 

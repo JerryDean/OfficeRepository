@@ -49,7 +49,6 @@ public class LampAllocationController {
 	 */
 	@RequestMapping(value = "/send/command", method = RequestMethod.POST)
 	public ConfigCommand save(@RequestBody ConfigCommand cc) {
-		System.out.println(cc);
 		UpdateLampInfoClient updateLampInfoClient = new UpdateLampInfoClient();
 		try {
 			// TODO Do save action...

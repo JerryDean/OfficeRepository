@@ -26,7 +26,7 @@ import java.util.Set;
 /**
  * Created by SerryMiano on 2016/12/12.
  */
-public class Calendar2Draw2 {
+public class CalendarToDraw {
     private String startDate;
     private String endDate;
     private Set<Daily2Draw> d2ds;
@@ -57,7 +57,7 @@ public class Calendar2Draw2 {
 
     @Override
     public String toString() {
-        return "Calendar2Draw2{" +
+        return "CalendarToDraw{" +
                 "startDate='" + startDate + '\'' +
                 ", endDate='" + endDate + '\'' +
                 ", d2ds=" + d2ds +

@@ -1,12 +1,10 @@
 package com.stee.cpm.service;
 
-import com.stee.cpm.dto.Daily2Draw;
+import com.stee.cpm.dto.CalendarToDraw;
 import com.stee.cpm.entity.Calendar2Draw;
 import com.stee.cpm.entity.Config;
 import com.stee.sel.common.ResultData;
 import com.stee.sel.cpm.CalendarProfile;
-
-import java.util.Set;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -45,5 +43,5 @@ public interface ICalendarProfileService {
 
 	void commission(CalendarProfile cp);
 
-    Set<Daily2Draw> getCalendar2Draw(Integer calendarId);
+	CalendarToDraw getCalendar2Draw(Integer calendarId);
 }
