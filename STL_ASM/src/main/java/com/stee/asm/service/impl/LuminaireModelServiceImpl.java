@@ -1,16 +1,16 @@
 package com.stee.asm.service.impl;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.stee.asm.repository.LifetimeTrackingRepository;
 import com.stee.asm.repository.LuminaireModelRepository;
 import com.stee.asm.service.ILuminaireModelService;
+import com.stee.sel.asm.LifetimeTrackingConfig;
 import com.stee.sel.asm.LuminaireModelConfig;
 import com.stee.sel.common.ResultData;
 import com.stee.sel.constant.ResponseCode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -80,7 +80,8 @@ public class LuminaireModelServiceImpl implements ILuminaireModelService {
 			LuminaireModelConfig findOne = repository.findOne(id);
 			String modelId = findOne.getModelId();
 			if (null != modelId && !modelId.equals("")) {
-				lifetimeRepo.deleteByConfigId(modelId);
+                LifetimeTrackingConfig config = lifetimeRepo.findByLuminaireId(modelId);
+                lifetimeRepo.delete(config.getId());
 			}
 			repository.delete(id);
 		} catch (Exception e) {

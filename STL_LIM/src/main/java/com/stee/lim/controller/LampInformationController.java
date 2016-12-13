@@ -1,26 +1,19 @@
 package com.stee.lim.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
-
 import com.stee.lim.dto.DownloadFile;
 import com.stee.lim.dto.GeoZoneLampInfo;
 import com.stee.lim.service.ILampInfoService;
 import com.stee.sel.common.ResultData;
 import com.stee.sel.lim.LampInfo;
 import com.stee.sel.lim.configruation.Location;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -65,6 +58,11 @@ public class LampInformationController {
 	public ResultData<LampInfo> getAll() {
 		return service.getAll();
 	}
+
+	@RequestMapping(value = "/query/filters", method = RequestMethod.POST)
+	public ResultData<LampInfo> queryByFilter() {
+	    return null;
+    }
 
 	/**
 	 * 更新Lamp信息。

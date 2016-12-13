@@ -21,8 +21,8 @@ package com.stee.cpm.entity;
  *  
  */
 public enum PriorityColor {
-	P1("rgba(125,125,125,1)"), P2("rgba(125,125,125,1)"), P3("rgba(125,125,125,1)"), P4("rgba(125,125,125,1)"), P5(
-			"rgba(0,255,0,1)"), P6("rgba(0,0,255,1)"), P7("rgba(255,0,0,1)");
+	P1("#f8cb00"), P2("#9b59b6"), P3("#f3565d"), P4("#1bbc9b"), P5(
+			"#1bbc9b"), P6("#34352C"), P7("#B8F788");
 
 	private String level;
 

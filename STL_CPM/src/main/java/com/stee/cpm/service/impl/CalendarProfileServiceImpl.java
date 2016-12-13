@@ -314,6 +314,7 @@ public class CalendarProfileServiceImpl implements ICalendarProfileService {
         Date sDate = null;
         Date eDate = null;
         Set<Daily2Draw> c2d = Sets.newHashSet();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         if (null != calendarId && !calendarId.equals("")) {
             CalendarProfile cp = repository.findOne(calendarId);
             if (null != cp) {
@@ -351,7 +352,7 @@ public class CalendarProfileServiceImpl implements ICalendarProfileService {
                         sCalendar.setTime(startDate);
                         Calendar eCalendar = Calendar.getInstance();
                         eCalendar.setTime(endDate);
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
                         for (; sCalendar.compareTo(eCalendar) <= 0; ) {
                             int week = sCalendar.get(Calendar.DAY_OF_WEEK);
                             int dayOfMonth = sCalendar.get(Calendar.DAY_OF_MONTH);
@@ -399,16 +400,45 @@ public class CalendarProfileServiceImpl implements ICalendarProfileService {
                                 }
                             }
                             if (pattern[0].equals(RecurrentPattern.DateBasedDD.getPattern())) {
-
+                                String date = pattern[1];
+                                if (dayOfMonth == Integer.valueOf(date)) {
+                                    c2d.add(new Daily2Draw(rule.getDesc(), sdf.format(sCalendar.getTime()), color));
+                                }
                             }
+                            if (pattern[0].equals(RecurrentPattern.DateBasedDDMM.getPattern())) {
+                                String date = pattern[1];
+                                String[] split = date.split("\\.");
+                                String day = split[1];
+                                String month = split[2];
+                                if (dayOfMonth == Integer.valueOf(day) && monthOfYear == Integer.valueOf(month) - 1) {
+                                    c2d.add(new Daily2Draw(rule.getDesc(), sdf.format(sCalendar.getTime()), color));
+                                }
+                            }
+                            if (pattern[0].equals(RecurrentPattern.DateBasedDDMMYYYY.getPattern())) {
+                                String date = pattern[1];
+                                String[] split = date.split("\\.");
+                                String day = split[0];
+                                String month = split[1];
+                                String year1 = split[2];
+                                if (dayOfMonth == Integer.valueOf(day) && monthOfYear == Integer.valueOf(month) + 1 && year == Integer.valueOf(year1)) {
+                                    c2d.add(new Daily2Draw(rule.getDesc(), sdf.format(sCalendar.getTime()), color));
+                                }
+                            }
+                            sCalendar.add(Calendar.DATE, 1);
                         }
                     }
                 } else {
                     return null;
                 }
             }
+            CalendarToDraw calendarToDraw = new CalendarToDraw();
+            calendarToDraw.setStartDate(sdf.format(sDate));
+            calendarToDraw.setEndDate(sdf.format(eDate));
+            calendarToDraw.setD2ds(c2d);
+            return calendarToDraw;
+        } else {
+            return null;
         }
-        return null;
     }
 
 }
