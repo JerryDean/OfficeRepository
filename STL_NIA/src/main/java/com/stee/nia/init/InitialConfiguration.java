@@ -1,6 +1,7 @@
 package com.stee.nia.init;
 
 import com.stee.nia.client.RealtimeConfigClient;
+import com.stee.nia.jms.NotifyBroker;
 import com.stee.nia.repository.ConnectionParamsRepository;
 import com.stee.sel.nia.ConnectionParams;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,8 @@ public class InitialConfiguration implements CommandLineRunner {
 	@Autowired
 	ConnectionParamsRepository repository;
 
+	@Autowired
+	NotifyBroker notifyBroker;
 
 	private static RealtimeConfigClient client = new RealtimeConfigClient();
 
@@ -48,6 +51,7 @@ public class InitialConfiguration implements CommandLineRunner {
 
 	@Override
 	public void run(String... arg0) throws Exception {
+	    notifyBroker.sendMessage();
 		List<ConnectionParams> findAll = repository.findAll();
 		findAll.forEach(t -> {
 			RealtimeConfigClient.map.put(t.getKey(), t.getValue());

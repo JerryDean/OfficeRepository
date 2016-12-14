@@ -5,11 +5,13 @@ import com.stee.cpm.dto.CalendarToDraw;
 import com.stee.cpm.dto.Daily2Draw;
 import com.stee.cpm.entity.*;
 import com.stee.cpm.repository.CalendarProfileRepository;
+import com.stee.cpm.repository.DailyProfileRepository;
 import com.stee.cpm.service.ICalendarProfileService;
 import com.stee.sel.common.ResultData;
 import com.stee.sel.constant.ResponseCode;
 import com.stee.sel.cpm.CalendarProfile;
 import com.stee.sel.cpm.SchedulingRule;
+import com.stee.sel.dpm.DailyProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -42,6 +44,9 @@ import java.util.*;
 public class CalendarProfileServiceImpl implements ICalendarProfileService {
     @Autowired
     CalendarProfileRepository repository;
+
+    @Autowired
+    DailyProfileRepository dpRepo;
 
     @Override
     public CalendarProfile save(CalendarProfile cp) {
@@ -322,6 +327,11 @@ public class CalendarProfileServiceImpl implements ICalendarProfileService {
                 if (null != rules && !rules.isEmpty()) {
                     for (SchedulingRule rule :
                             rules) {
+                        // 获取 Daily Profile 的名称
+                        String schedulerId = rule.getSchedulerId();
+                        DailyProfile dailyProfile = dpRepo.findOne(schedulerId);
+                        String dpName = dailyProfile.getName();
+
                         // 获取所有rules中最早的一天及最后一天的日期
                         Date startDate = rule.getStartDate();
                         Date endDate = rule.getEndDate();
@@ -364,37 +374,37 @@ public class CalendarProfileServiceImpl implements ICalendarProfileService {
                                 switch (pattern[1]) {
                                     case "Mon":
                                         if (week == 2) {
-                                            c2d.add(new Daily2Draw(rule.getDesc(), sdf.format(sCalendar.getTime()), color));
+                                            c2d.add(new Daily2Draw(dpName, sdf.format(sCalendar.getTime()), color));
                                         }
                                         break;
                                     case "Tue":
                                         if (week == 3) {
-                                            c2d.add(new Daily2Draw(rule.getDesc(), sdf.format(sCalendar.getTime()), color));
+                                            c2d.add(new Daily2Draw(dpName, sdf.format(sCalendar.getTime()), color));
                                         }
                                         break;
                                     case "Wed":
                                         if (week == 4) {
-                                            c2d.add(new Daily2Draw(rule.getDesc(), sdf.format(sCalendar.getTime()), color));
+                                            c2d.add(new Daily2Draw(dpName, sdf.format(sCalendar.getTime()), color));
                                         }
                                         break;
                                     case "Thur":
                                         if (week == 5) {
-                                            c2d.add(new Daily2Draw(rule.getDesc(), sdf.format(sCalendar.getTime()), color));
+                                            c2d.add(new Daily2Draw(dpName, sdf.format(sCalendar.getTime()), color));
                                         }
                                         break;
                                     case "Fri":
                                         if (week == 6) {
-                                            c2d.add(new Daily2Draw(rule.getDesc(), sdf.format(sCalendar.getTime()), color));
+                                            c2d.add(new Daily2Draw(dpName, sdf.format(sCalendar.getTime()), color));
                                         }
                                         break;
                                     case "Sat":
                                         if (week == 7) {
-                                            c2d.add(new Daily2Draw(rule.getDesc(), sdf.format(sCalendar.getTime()), color));
+                                            c2d.add(new Daily2Draw(dpName, sdf.format(sCalendar.getTime()), color));
                                         }
                                         break;
                                     case "Sun":
                                         if (week == 1) {
-                                            c2d.add(new Daily2Draw(rule.getDesc(), sdf.format(sCalendar.getTime()), color));
+                                            c2d.add(new Daily2Draw(dpName, sdf.format(sCalendar.getTime()), color));
                                         }
                                         break;
                                 }
@@ -402,7 +412,7 @@ public class CalendarProfileServiceImpl implements ICalendarProfileService {
                             if (pattern[0].equals(RecurrentPattern.DateBasedDD.getPattern())) {
                                 String date = pattern[1];
                                 if (dayOfMonth == Integer.valueOf(date)) {
-                                    c2d.add(new Daily2Draw(rule.getDesc(), sdf.format(sCalendar.getTime()), color));
+                                    c2d.add(new Daily2Draw(dpName, sdf.format(sCalendar.getTime()), color));
                                 }
                             }
                             if (pattern[0].equals(RecurrentPattern.DateBasedDDMM.getPattern())) {
@@ -411,7 +421,7 @@ public class CalendarProfileServiceImpl implements ICalendarProfileService {
                                 String day = split[1];
                                 String month = split[2];
                                 if (dayOfMonth == Integer.valueOf(day) && monthOfYear == Integer.valueOf(month) - 1) {
-                                    c2d.add(new Daily2Draw(rule.getDesc(), sdf.format(sCalendar.getTime()), color));
+                                    c2d.add(new Daily2Draw(dpName, sdf.format(sCalendar.getTime()), color));
                                 }
                             }
                             if (pattern[0].equals(RecurrentPattern.DateBasedDDMMYYYY.getPattern())) {
@@ -421,7 +431,7 @@ public class CalendarProfileServiceImpl implements ICalendarProfileService {
                                 String month = split[1];
                                 String year1 = split[2];
                                 if (dayOfMonth == Integer.valueOf(day) && monthOfYear == Integer.valueOf(month) + 1 && year == Integer.valueOf(year1)) {
-                                    c2d.add(new Daily2Draw(rule.getDesc(), sdf.format(sCalendar.getTime()), color));
+                                    c2d.add(new Daily2Draw(dpName, sdf.format(sCalendar.getTime()), color));
                                 }
                             }
                             sCalendar.add(Calendar.DATE, 1);

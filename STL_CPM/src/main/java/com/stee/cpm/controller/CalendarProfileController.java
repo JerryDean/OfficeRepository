@@ -86,6 +86,7 @@ public class CalendarProfileController {
 
     @RequestMapping(value = "/get/calendar2draw", method = RequestMethod.GET)
     CalendarToDraw getCalendar2Draw (@RequestParam("calendarId") Integer calendarId) {
+        System.err.println("");
         return service.getCalendar2Draw(calendarId);
     }
 

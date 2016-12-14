@@ -1,8 +1,8 @@
 package com.stee.nia.websocket;
 
-import java.util.ResourceBundle;
-
 import org.eclipse.jetty.server.Server;
+
+import java.util.ResourceBundle;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -37,7 +37,7 @@ public class WebSocketServer {
 	}
 
 	public static void run() {
-		Server server = new Server(port);
+		Server server = new Server(5700);
 		server.setHandler(new MySocketHandler());
 		server.setStopTimeout(0);
 		try {
@@ -48,5 +48,9 @@ public class WebSocketServer {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static void main(String[] args) {
+		run();
 	}
 }

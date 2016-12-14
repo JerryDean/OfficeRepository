@@ -1,6 +1,7 @@
 package com.stee.nia.jms;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
@@ -19,5 +20,10 @@ public class NotifyBroker {
     public void sendMessage() throws JMSException {
         Topic topic = jmsTemplate.getConnectionFactory().createConnection().createSession(false, Session.AUTO_ACKNOWLEDGE).createTopic("rolling.status");
         jmsTemplate.convertAndSend(topic, true);
+    }
+
+    @JmsListener(destination = "rolling.status")
+    public void receiveMsg(boolean flag) {
+        System.out.println(flag);
     }
 }
