@@ -14,7 +14,7 @@
 	<context:annotation-config/>
 	
 	<!-- 开启包扫描 -->
-	<context:component-scan base-package="com.stee.nia,com.stee.sel" />
+	<context:component-scan base-package="com.stee.nia" />
 	
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
