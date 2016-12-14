@@ -1,6 +1,11 @@
 package com.stee.stl.bhcp.service.impl;
 
+import com.google.common.collect.Sets;
+import com.stee.sel.asm.LifetimeTrackingConfig;
+import com.stee.sel.asm.ThresholdsOfLifetime;
 import com.stee.sel.lfm.BurningHourAlert;
+import com.stee.sel.lim.LampInfo;
+import com.stee.sel.lim.status.LampStatus;
 import com.stee.stl.bhcp.entity.QueryBean;
 import com.stee.stl.bhcp.repository.BurningHourAlertRepository;
 import com.stee.stl.bhcp.repository.LampInfoRepository;
@@ -18,8 +23,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -70,8 +77,44 @@ public class BurningHourAlertServiceImpl implements IBurningHourAlertService {
 
 	@Override
 	public void computeBurningHourAlert() {
-
-	}
+		List<LampInfo> lamps = lampRepo.findAll();
+        if (null != lamps && !lamps.isEmpty()) {
+            Set<BurningHourAlert> burningHourAlertSet = Sets.newHashSet();
+            lamps.forEach(lampInfo -> {
+                LampStatus lampStatus = lampInfo.getLampStatus();
+                Integer burningHour = lampStatus.getBurningHour();
+                String moduleId = lampInfo.getModuleId();
+                LifetimeTrackingConfig lifetimeConfig = lifetimeRepo.findByLuminaireId(moduleId);
+                Integer lifetime = lifetimeConfig.getLifetime();
+                List<ThresholdsOfLifetime> thresholds = lifetimeConfig.getThresholds();
+                double percent = (double) burningHour / (double) lifetime;
+                NumberFormat numberFormat = NumberFormat.getInstance();
+                numberFormat.setMaximumFractionDigits(0);
+                Integer ratio = Integer.valueOf(numberFormat.format(percent * 100));
+                for (int i = 0; i < thresholds.size(); i++) {
+                    ThresholdsOfLifetime threshold = thresholds.get(i);
+                    String threshold1 = threshold.getThreshold();
+                    if (ratio >= Integer.valueOf(threshold1) && thresholds.size() > 1) {
+                        continue;
+                    } else {
+                        ThresholdsOfLifetime thresholdsOfLifetime = thresholds.get(thresholds.size() > 1 ? i - 1 : i);
+                        BurningHourAlert burningHourAlert = new BurningHourAlert();
+                        burningHourAlert.setAlertMsg(thresholdsOfLifetime.getAlertMsg());
+                        burningHourAlert.setBurningHour(burningHour);
+                        burningHourAlert.setLuminaireId(lampInfo.getId());
+                        burningHourAlert.setRatio(ratio);
+                        burningHourAlert.setTrackingType(lifetimeConfig.getTrackingEntity());
+                        burningHourAlert.setSeverityLevel(thresholdsOfLifetime.getSeverityLevel());
+                        burningHourAlertSet.add(burningHourAlert);
+                    }
+                }
+            });
+            if (null != burningHourAlertSet && !burningHourAlertSet.isEmpty()) {
+                repository.save(burningHourAlertSet);
+            }
+        }
+        // TODO: 2016/12/14 后需主动推送Alert至前端进行显示
+    }
 
 	private Specification<BurningHourAlert> where(final String moduleId, final Integer start, final Integer end) {
 		return new Specification<BurningHourAlert>() {
@@ -89,5 +132,6 @@ public class BurningHourAlertServiceImpl implements IBurningHourAlertService {
 			}
 		};
 	}
+
 
 }

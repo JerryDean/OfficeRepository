@@ -1,16 +1,19 @@
 package com.stee.nia.init;
 
+import com.google.common.collect.Sets;
 import com.stee.nia.client.RealtimeConfigClient;
-import com.stee.nia.jms.NotifyBroker;
 import com.stee.nia.repository.ConnectionParamsRepository;
+import com.stee.nia.websocket.MySocketHandler;
 import com.stee.sel.nia.ConnectionParams;
+import org.eclipse.jetty.server.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.ResourceBundle;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -37,43 +40,91 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class InitialConfiguration implements CommandLineRunner {
-	@Autowired
-	ConnectionParamsRepository repository;
+    private static RealtimeConfigClient client = new RealtimeConfigClient();
 
-	@Autowired
-	NotifyBroker notifyBroker;
+    @Autowired
+    ConnectionParamsRepository repository;
 
-	private static RealtimeConfigClient client = new RealtimeConfigClient();
+    ScheduledExecutorService executorService = Executors.newScheduledThreadPool(5);
 
-	ScheduledExecutorService executorService = Executors.newScheduledThreadPool(5);
+    ResourceBundle resource = ResourceBundle.getBundle("config");
 
-	ResourceBundle rb = ResourceBundle.getBundle("config");
+    public static long interval = 5;
 
-	@Override
-	public void run(String... arg0) throws Exception {
-	    notifyBroker.sendMessage();
-		List<ConnectionParams> findAll = repository.findAll();
-		findAll.forEach(t -> {
-			RealtimeConfigClient.map.put(t.getKey(), t.getValue());
-		});
-		long interval = 5;
-		Integer obj = null;
-		try {
-			RestTemplate restTemplate = new RestTemplate();
-			obj = restTemplate.getForObject(rb.getString("scm.rest.get.value") + "Polling_Interval", Integer.class);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		if (null != obj) {
-			try {
-				interval = obj;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		executorService.scheduleAtFixedRate(() -> {
-			client.getPollingStatus();
-		}, interval, interval, TimeUnit.MINUTES);
-	}
+    @Override
+    public void run(String... arg0) throws Exception {
+        initProperties();
+        initWebSocket();
+        initPollingTimer();
+    }
+
+    private void initProperties() {
+        List<ConnectionParams> findAll = repository.findAll();
+        if (null != findAll && !findAll.isEmpty() && findAll.size() >= 7) {
+            findAll.forEach(t -> {
+                RealtimeConfigClient.map.put(t.getKey(), t.getValue());
+            });
+        } else {
+            Properties properties = new Properties();
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream("nia-config.properties");
+            try {
+                properties.load(inputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (!properties.entrySet().isEmpty()) {
+                repository.deleteAll();
+                Iterator<Map.Entry<Object, Object>> iterator = properties.entrySet().iterator();
+                Set<ConnectionParams> connectionParamsSet = Sets.newHashSet();
+                while (iterator.hasNext()) {
+                    Map.Entry<Object, Object> next = iterator.next();
+                    ConnectionParams connectionParams = new ConnectionParams();
+                    connectionParams.setKey(next.getKey().toString());
+                    connectionParams.setValue(next.getValue().toString());
+                    connectionParamsSet.add(connectionParams);
+                }
+                if (null != connectionParamsSet && !connectionParamsSet.isEmpty()) {
+                    repository.save(connectionParamsSet);
+                }
+            } else {
+                // TODO: 2016/12/14 从数据库获取数据，并写入Properties
+            }
+        }
+    }
+
+    private void initPollingTimer() {
+        Integer obj = null;
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            obj = restTemplate.getForObject(resource.getString("scm.rest.get.value") + "Polling_Interval", Integer.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (null != obj) {
+            try {
+                interval = obj;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        executorService.scheduleAtFixedRate(() -> {
+            client.getPollingStatus();
+        }, interval, interval, TimeUnit.MINUTES);
+    }
+
+    private void initWebSocket() {
+        Server server = new Server(Integer.parseInt(resource.getString("socket.port")));
+        server.setHandler(new MySocketHandler());
+        server.setStopTimeout(0);
+        try {
+            server.start();
+            server.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }
