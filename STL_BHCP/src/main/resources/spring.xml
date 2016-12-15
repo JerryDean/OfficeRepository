@@ -53,7 +53,7 @@
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"></bean>			
 		</property>
-		<property name="packagesToScan" value="com.stee.sel.lfm"></property>
+		<property name="packagesToScan" value="com.stee.sel.lfm,com.stee.sel.lim,com.stee.sel.asm"></property>
 		<property name="jpaProperties">
 			<props>
 				<prop key="hibernate.show_sql">true</prop>

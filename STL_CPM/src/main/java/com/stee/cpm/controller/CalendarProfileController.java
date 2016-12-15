@@ -2,8 +2,6 @@ package com.stee.cpm.controller;
 
 import com.google.common.collect.Maps;
 import com.stee.cpm.dto.CalendarToDraw;
-import com.stee.cpm.entity.Calendar2Draw;
-import com.stee.cpm.entity.Config;
 import com.stee.cpm.service.ICalendarProfileService;
 import com.stee.sel.common.ResultData;
 import com.stee.sel.cpm.CalendarProfile;
@@ -79,10 +77,10 @@ public class CalendarProfileController {
         return false;
     }
 
-    @RequestMapping(value = "/get/calendar2draw", method = RequestMethod.POST)
-    public Calendar2Draw getCalendar2Draw(@RequestBody Config config) {
-        return service.getCalendar2Draw(config);
-    }
+//    @RequestMapping(value = "/get/calendar2draw", method = RequestMethod.POST)
+//    public Calendar2Draw getCalendar2Draw(@RequestBody Config config) {
+//        return service.getCalendar2Draw(config);
+//    }
 
     @RequestMapping(value = "/get/calendar2draw", method = RequestMethod.GET)
     CalendarToDraw getCalendar2Draw (@RequestParam("calendarId") Integer calendarId) {

@@ -51,8 +51,11 @@ public class InitialConfiguration implements CommandLineRunner {
 
     public static long interval = 5;
 
+    public static Integer webSocketMode = 0;
+
     @Override
     public void run(String... arg0) throws Exception {
+        webSocketMode = Integer.valueOf(resource.getString("websocket.mode"));
         initProperties();
         initWebSocket();
         initPollingTimer();

@@ -4,7 +4,7 @@
 
   <groupId>com.stee.stl</groupId>
   <artifactId>asm</artifactId>
-  <version>0.4.0.1</version>
+  <version>1.0.0.1</version>
   <packaging>jar</packaging>
 
   <name>STL_ASM</name>

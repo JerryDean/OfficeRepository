@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.stee.nia.init.InitialConfiguration;
 import com.stee.nia.repository.LampInfoRepository;
+import com.stee.sel.constant.OperationState;
 import com.stee.sel.lim.LampInfo;
+import com.stee.sel.lim.status.EnergyUsage;
 import com.stee.sel.lim.status.LampStatus;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -14,6 +16,7 @@ import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
+import java.util.Date;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -49,46 +52,45 @@ public class MySocketHandler extends WebSocketHandler {
         String type = statusRequest.getType();
         String id = statusRequest.getId();
         if (type.equals("lampStatus")) {
-            long interval = InitialConfiguration.interval;
-            while (true) {
-                try {
-                    Thread.sleep(interval * 60 * 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                LampInfo lampInfo = repository.findOne(id);
-                LampStatus lampStatus = lampInfo.getLampStatus();
+            if (InitialConfiguration.webSocketMode == 0) {
+                LampStatus lampStatus = new LampStatus();
+                lampStatus.setVoltage(14.3f);
+                lampStatus.setPowerFactor(13f);
+                lampStatus.setLampSwitch(false);
+                lampStatus.setActivePower(14.13f);
+                lampStatus.setApparentPower(14.33f);
+                lampStatus.setBurningHour(5000);
+                lampStatus.setCurrentFlow(12f);
+                lampStatus.setEnergyUsage(new EnergyUsage(14d, new Date()));
+                lampStatus.setReactivePower(14.5f);
+                lampStatus.setTemperature(53f);
+                lampStatus.setInstalledDate(new Date());
+                lampStatus.setOperationState(OperationState.Unknown);
+                lampStatus.setLampLevel(75);
+                lampStatus.setNodeFailureMessage(null);
                 ObjectMapper objectMapper = new ObjectMapper();
-                session.getRemote().sendString(objectMapper.writeValueAsString(lampStatus));
+                StatusResponse statusResponse = new StatusResponse();
+                statusResponse.setType("lampStatus");
+                statusResponse.setObject(lampStatus);
+                session.getRemote().sendString(objectMapper.writeValueAsString(statusResponse));
+            } else {
+                long interval = InitialConfiguration.interval;
+                while (true) {
+                    try {
+                        Thread.sleep(interval * 60 * 1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    LampInfo lampInfo = repository.findOne(id);
+                    LampStatus lampStatus = lampInfo.getLampStatus();
+                    StatusResponse statusResponse = new StatusResponse();
+                    statusResponse.setObject(lampStatus);
+                    statusResponse.setType("lampStatus");
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    session.getRemote().sendString(objectMapper.writeValueAsString(statusResponse));
+                }
             }
         }
-//        while (true) {
-//            try {
-//                Thread.sleep(5000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            StatusResponse statusResponse = new StatusResponse();
-//            statusResponse.setType("lampStatus");
-//            LampStatus lampStatus = new LampStatus();
-//            Random random = new Random();
-//            lampStatus.setActivePower(random.nextFloat());
-//            lampStatus.setTemperature(random.nextFloat());
-//            lampStatus.setApparentPower(random.nextFloat());
-//            lampStatus.setBurningHour(random.nextInt());
-//            lampStatus.setCurrentFlow(random.nextFloat());
-//            lampStatus.setEnergyUsage(new EnergyUsage(350d, new Date()));
-//            lampStatus.setInstalledDate(new Date());
-//            lampStatus.setLampLevel(random.nextInt());
-//            lampStatus.setLampSwitch(true);
-//            lampStatus.setPowerFactor(random.nextFloat());
-//            lampStatus.setVoltage(12f);
-//            lampStatus.setOperationState(OperationState.LampFailure);
-//            lampStatus.setNodeFailureMessage("Lamp Failure");
-//            statusResponse.setObject(lampStatus);
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            session.getRemote().sendString(objectMapper.writeValueAsString(statusResponse));
-//        }
     }
 
 	class StatusResponse {

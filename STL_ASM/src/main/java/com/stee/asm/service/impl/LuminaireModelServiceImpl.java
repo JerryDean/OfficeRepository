@@ -81,7 +81,9 @@ public class LuminaireModelServiceImpl implements ILuminaireModelService {
 			String modelId = findOne.getModelId();
 			if (null != modelId && !modelId.equals("")) {
                 LifetimeTrackingConfig config = lifetimeRepo.findByLuminaireId(modelId);
-                lifetimeRepo.delete(config.getId());
+				if (null != config) {
+					lifetimeRepo.delete(config.getId());
+				}
 			}
 			repository.delete(id);
 		} catch (Exception e) {
