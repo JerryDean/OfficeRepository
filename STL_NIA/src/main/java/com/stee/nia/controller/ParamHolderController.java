@@ -1,15 +1,14 @@
 package com.stee.nia.controller;
 
-import java.util.Map;
-
+import com.stee.nia.service.IParamHolderService;
+import com.stee.nia.service.impl.RealTimeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.stee.nia.client.RealtimeConfigClient;
-import com.stee.nia.service.IParamHolderService;
+import java.util.Map;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -57,6 +56,6 @@ public class ParamHolderController {
 	 */
 	@RequestMapping(value = "/fetch", method = RequestMethod.GET)
 	public Map<String, String> fetchConfig() {
-		return RealtimeConfigClient.map;
+		return RealTimeServiceImpl.map;
 	}
 }

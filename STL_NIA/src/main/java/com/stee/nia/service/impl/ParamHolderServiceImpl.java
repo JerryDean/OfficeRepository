@@ -1,17 +1,15 @@
 package com.stee.nia.service.impl;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.stee.nia.client.RealtimeConfigClient;
 import com.stee.nia.repository.ConnectionParamsRepository;
 import com.stee.nia.service.IParamHolderService;
 import com.stee.nia.utils.PropertiesUtils;
 import com.stee.sel.constant.ResponseCode;
 import com.stee.sel.nia.ConnectionParams;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -49,9 +47,9 @@ public class ParamHolderServiceImpl implements IParamHolderService {
 				repository.update(k, v);
 			});
 			List<ConnectionParams> findAll = repository.findAll();
-			RealtimeConfigClient.map.clear();
+			RealTimeServiceImpl.map.clear();
 			findAll.forEach(t -> {
-				RealtimeConfigClient.map.put(t.getKey(), t.getValue());
+				RealTimeServiceImpl.map.put(t.getKey(), t.getValue());
 			});
 		} catch (Exception e) {
 			e.printStackTrace();

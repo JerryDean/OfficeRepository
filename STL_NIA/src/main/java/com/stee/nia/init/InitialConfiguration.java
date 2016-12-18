@@ -1,8 +1,8 @@
 package com.stee.nia.init;
 
 import com.google.common.collect.Sets;
-import com.stee.nia.client.RealtimeConfigClient;
 import com.stee.nia.repository.ConnectionParamsRepository;
+import com.stee.nia.service.impl.RealTimeServiceImpl;
 import com.stee.nia.websocket.MySocketHandler;
 import com.stee.sel.nia.ConnectionParams;
 import org.eclipse.jetty.server.Server;
@@ -40,7 +40,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class InitialConfiguration implements CommandLineRunner {
-    private static RealtimeConfigClient client = new RealtimeConfigClient();
+    @Autowired
+    RealTimeServiceImpl realTimeService;
 
     @Autowired
     ConnectionParamsRepository repository;
@@ -65,7 +66,7 @@ public class InitialConfiguration implements CommandLineRunner {
         List<ConnectionParams> findAll = repository.findAll();
         if (null != findAll && !findAll.isEmpty() && findAll.size() >= 7) {
             findAll.forEach(t -> {
-                RealtimeConfigClient.map.put(t.getKey(), t.getValue());
+                realTimeService.map.put(t.getKey(), t.getValue());
             });
         } else {
             Properties properties = new Properties();
@@ -112,7 +113,7 @@ public class InitialConfiguration implements CommandLineRunner {
         }
 
         executorService.scheduleAtFixedRate(() -> {
-            client.getPollingStatus();
+            realTimeService.testPollingStatus();
         }, interval, interval, TimeUnit.MINUTES);
     }
 

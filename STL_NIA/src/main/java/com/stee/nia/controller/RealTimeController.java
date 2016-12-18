@@ -1,14 +1,13 @@
 package com.stee.nia.controller;
 
-import javax.annotation.Resource;
-
+import com.stee.nia.service.IRealTimeService;
+import com.stee.sel.lcm.ConfigCommand;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.stee.nia.service.IRealTimeService;
-import com.stee.sel.lcm.ConfigCommand;
+import javax.annotation.Resource;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -48,4 +47,5 @@ public class RealTimeController {
 	public String send(@RequestBody ConfigCommand cc) throws Throwable {
 		return realTimeService.send(cc);
 	}
+
 }
