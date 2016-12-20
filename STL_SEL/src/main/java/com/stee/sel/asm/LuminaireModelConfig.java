@@ -53,7 +53,17 @@ public class LuminaireModelConfig {
 
 	private String controlProtocol;
 
-	@Id
+	private boolean isLifeTimeExits;
+
+    public boolean isLifeTimeExits() {
+        return isLifeTimeExits;
+    }
+
+    public void setLifeTimeExits(boolean lifeTimeExits) {
+        isLifeTimeExits = lifeTimeExits;
+    }
+
+    @Id
 	@GeneratedValue
 	public Integer getId() {
 		return id;
@@ -160,12 +170,21 @@ public class LuminaireModelConfig {
 		this.controlProtocol = controlProtocol;
 	}
 
-	@Override
-	public String toString() {
-		return "LuminaireModelConfig [id=" + id + ", modelId=" + modelId + ", description=" + description
-				+ ", lampType=" + lampType + ", ratedWatt=" + ratedWatt + ", manufacturer=" + manufacturer
-				+ ", lightSensor=" + lightSensor + ", motionSensor=" + motionSensor + ", pollingMethod=" + pollingMethod
-				+ ", picStr=" + picStr + ", controlProtocol=" + controlProtocol + "]";
-	}
-
+    @Override
+    public String toString() {
+        return "LuminaireModelConfig{" +
+                "id=" + id +
+                ", modelId='" + modelId + '\'' +
+                ", description='" + description + '\'' +
+                ", lampType='" + lampType + '\'' +
+                ", ratedWatt=" + ratedWatt +
+                ", manufacturer='" + manufacturer + '\'' +
+                ", lightSensor=" + lightSensor +
+                ", motionSensor=" + motionSensor +
+                ", pollingMethod=" + pollingMethod +
+                ", picStr='" + picStr + '\'' +
+                ", controlProtocol='" + controlProtocol + '\'' +
+                ", isLifeTimeExits=" + isLifeTimeExits +
+                '}';
+    }
 }

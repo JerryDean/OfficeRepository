@@ -1,5 +1,6 @@
 package com.stee.asm.service.impl;
 
+import com.google.common.collect.Lists;
 import com.stee.asm.repository.LifetimeTrackingRepository;
 import com.stee.asm.repository.LuminaireModelRepository;
 import com.stee.asm.service.ILuminaireModelService;
@@ -43,9 +44,22 @@ public class LuminaireModelServiceImpl implements ILuminaireModelService {
 	@Override
 	public ResultData<LuminaireModelConfig> getAll() {
 		ResultData<LuminaireModelConfig> resultData = new ResultData<>();
-		try {
+		List<LuminaireModelConfig> list = Lists.newArrayList();
+        try {
 			List<LuminaireModelConfig> findAll = repository.findAll();
-			resultData.setData(findAll);
+            if (null != findAll && !findAll.isEmpty()) {
+                for (LuminaireModelConfig luminaireModelConfig : findAll) {
+                    String modelId = luminaireModelConfig.getModelId();
+                    LifetimeTrackingConfig lifetimeTrackingConfig = lifetimeRepo.findByLuminaireId(modelId);
+                    if (null != lifetimeTrackingConfig) {
+                        luminaireModelConfig.setLifeTimeExits(true);
+                    } else {
+                        luminaireModelConfig.setLifeTimeExits(false);
+                    }
+                    list.add(luminaireModelConfig);
+                }
+            }
+            resultData.setData(list);
 			resultData.setStatus(ResponseCode.SUCCESS.getCode());
 		} catch (Exception e) {
 			e.printStackTrace();
