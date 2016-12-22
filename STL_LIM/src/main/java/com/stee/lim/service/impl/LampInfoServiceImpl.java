@@ -1,20 +1,22 @@
 package com.stee.lim.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.stee.lim.repository.LampInfoRepository;
 import com.stee.lim.service.ILampInfoService;
 import com.stee.sel.common.ResultData;
 import com.stee.sel.constant.ResponseCode;
 import com.stee.sel.lim.LampInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.*;
+import java.util.Map.Entry;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -151,5 +153,38 @@ public class LampInfoServiceImpl implements ILampInfoService {
 	public List<LampInfo> getByGeoZoneId(String geoZoneId) {
 		return repository.findByGeoZoneId(geoZoneId);
 	}
+
+	@Override
+	public Page<LampInfo> getAllByFilter(Integer pageNo, Integer pageSize, String name, String addr, String gzId) {
+        System.out.println("pageNo = [" + pageNo + "], pageSize = [" + pageSize + "], name = [" + name + "], addr = [" + addr + "], gzId = [" + gzId + "]");
+        Page<LampInfo> page = null;
+        PageRequest pageRequest = new PageRequest(pageNo, pageSize);
+        try {
+            page = repository.findAll(where(name, addr, gzId), pageRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return page;
+	}
+
+    private Specification<LampInfo> where(final String name, final String addr, final String gzId) {
+        return new Specification<LampInfo>() {
+
+            @Override
+            public Predicate toPredicate(Root<LampInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                List<Predicate> predicates = new ArrayList<>();
+                if (null != name && !name.equals("")) {
+                    predicates.add(cb.like(root.<String>get("name"), "%" + name + "%"));
+                }
+                if (null != addr && !addr.equals("")) {
+                    predicates.add(cb.like(root.<String>get("address"), "%" + addr + "%"));
+                }
+                if (null != gzId && !gzId.equals("")) {
+                    predicates.add(cb.like(root.<String>get("geoZoneId"), "%" + gzId + "%"));
+                }
+                return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
+            }
+        };
+    }
 
 }

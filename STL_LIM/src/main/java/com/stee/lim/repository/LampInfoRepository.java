@@ -1,10 +1,11 @@
 package com.stee.lim.repository;
 
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.stee.sel.lim.LampInfo;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.PagingAndSortingRepository;
+
+import java.util.List;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -26,6 +27,6 @@ import com.stee.sel.lim.LampInfo;
  * --------------------------------------------------------------------------------
  *  
  */
-public interface LampInfoRepository extends JpaRepository<LampInfo, String> {
+public interface LampInfoRepository extends JpaRepository<LampInfo, String>,JpaSpecificationExecutor<LampInfo>,PagingAndSortingRepository<LampInfo, String> {
 	List<LampInfo> findByGeoZoneId(String geoZoneId);
 }

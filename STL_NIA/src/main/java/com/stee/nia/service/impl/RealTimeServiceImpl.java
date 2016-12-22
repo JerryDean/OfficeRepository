@@ -146,10 +146,13 @@ public class RealTimeServiceImpl implements IRealTimeService {
     }
 
     public String sendRealTime(Commands commands) {
+        System.out.println("commands = [" + commands + "]");
         if (resourceBundle.getString("environment").equals("0")) {
             reloadProps();
+            System.out.println("Reload properties success.");
         } else {
             getToken();
+            System.out.println("Get token success.");
         }
 
         HttpHeaders headers = new HttpHeaders();
@@ -158,8 +161,9 @@ public class RealTimeServiceImpl implements IRealTimeService {
         headers.set("Content-Type", "application/xml;charset=UTF-8");
 
         HttpEntity<?> httpEntity = new HttpEntity<>(commands, headers);
+        System.out.println("Request:" + httpEntity);
         RealtimeNmsResult response = template.postForObject(realTimeUri, httpEntity, RealtimeNmsResult.class);
-
+        System.out.println("Response:" + response);
         if (response.getStatus().equals("SUCCESS")) {
             if (null != commands.getSet() && !commands.getSet().isEmpty()) {
                 for (Set set : commands.getSet()) {
@@ -198,6 +202,7 @@ public class RealTimeServiceImpl implements IRealTimeService {
     }
 
     public String sendScheduled(Configuration config) {
+        System.out.println("config = [" + config + "]");
         if (resourceBundle.getString("environment").equals("0")) {
             reloadProps();
         } else {
@@ -208,7 +213,9 @@ public class RealTimeServiceImpl implements IRealTimeService {
                 "OAuth oauth_grant_type=\"password\",oauth_version=\"2.0\",oauth_access_token=\"" + token + "\"");
         headers.set("Content-Type", "application/xml;charset=UTF-8");
         HttpEntity<?> httpEntity = new HttpEntity<>(config, headers);
+        System.out.println("Request:" + httpEntity);
         RealtimeNmsResult realtimeNmsResult = template.postForObject(scheduleUri, httpEntity, RealtimeNmsResult.class);
+        System.out.println("Response:" + realtimeNmsResult);
         if (realtimeNmsResult.getStatus().equals("SUCCESS")) {
             // TODO: 2016/12/18 Asyn advice client the commission status.
         }

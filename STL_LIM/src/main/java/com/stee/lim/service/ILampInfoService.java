@@ -1,10 +1,11 @@
 package com.stee.lim.service;
 
-import java.util.List;
-import java.util.Map;
-
 import com.stee.sel.common.ResultData;
 import com.stee.sel.lim.LampInfo;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
+import java.util.Map;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -41,4 +42,5 @@ public interface ILampInfoService {
 
 	List<LampInfo> getByGeoZoneId(String geoZoneId);
 
+	Page<LampInfo> getAllByFilter(Integer pageNo, Integer pageSize, String name, String addr, String gzId);
 }

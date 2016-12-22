@@ -6,6 +6,7 @@ import com.stee.lim.service.ILampInfoService;
 import com.stee.sel.common.ResultData;
 import com.stee.sel.lim.LampInfo;
 import com.stee.sel.lim.configruation.Location;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
@@ -48,15 +49,29 @@ public class LampInformationController {
 
 	}
 
+    /**
+     * 获取所有数据。
+     *
+     * @return
+     */
+	@RequestMapping(value = "/get/all", method = RequestMethod.GET)
+	public ResultData<LampInfo> getAll () {
+	    return service.getAll();
+    }
+
 	/**
-	 * 获取所有LampInfo信息，列表展示 *待分页
+	 * 获取过滤后的分页数据。
 	 * 
 	 * @return
 	 * @author Jerry
 	 */
-	@RequestMapping(value = "/get/all", method = RequestMethod.GET)
-	public ResultData<LampInfo> getAll() {
-		return service.getAll();
+	@RequestMapping(value = "/get/all/byfilter", method = RequestMethod.GET)
+	public Page<LampInfo> getAllByFilter(@RequestParam(name = "name", required = false) String name,
+                                 @RequestParam(name = "addr",required = false) String addr,
+                                 @RequestParam(name = "gzId",required = false) String gzId,
+                                 @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+                                 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+		return service.getAllByFilter(pageNo, pageSize, name, addr, gzId);
 	}
 
 	@RequestMapping(value = "/query/filters", method = RequestMethod.POST)
@@ -112,11 +127,11 @@ public class LampInformationController {
 		ResultData<LampInfo> all = service.getAll();
 		List<GeoZoneLampInfo> list = new ArrayList<>();
 		try {
-			all.getData().forEach(t -> {
-				String id = t.getId();
-				Location location = t.getLocation();
-				list.add(new GeoZoneLampInfo(id, location));
-			});
+				all.getData().forEach(t -> {
+					String id = t.getId();
+					Location location = t.getLocation();
+					list.add(new GeoZoneLampInfo(id, location));
+				});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
