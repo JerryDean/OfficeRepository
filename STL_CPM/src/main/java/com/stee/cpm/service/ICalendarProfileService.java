@@ -44,4 +44,6 @@ public interface ICalendarProfileService {
 	void commission(CalendarProfile cp);
 
 	CalendarToDraw getCalendar2Draw(Integer calendarId);
+
+    ResultData<CalendarProfile> findByNameLike(String name);
 }

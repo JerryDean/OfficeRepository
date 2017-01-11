@@ -69,6 +69,11 @@ public class CalendarProfileController {
         return service.getAll();
     }
 
+    @RequestMapping(value = "/name/like", method = RequestMethod.GET)
+    ResultData<CalendarProfile> findByNameLike(@RequestParam(name = "name", required = false) String name) {
+        return service.findByNameLike(name);
+    }
+
     @RequestMapping(value = "/searchByName", method = RequestMethod.GET)
     public boolean searchByName(@RequestParam(value = "name", required = true) String name) {
         if (null != name && !name.equals("")) {
@@ -87,5 +92,7 @@ public class CalendarProfileController {
         System.err.println("");
         return service.getCalendar2Draw(calendarId);
     }
+
+
 
 }

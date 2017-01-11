@@ -1,8 +1,9 @@
 package com.stee.cpm.repository;
 
+import com.stee.sel.cpm.CalendarProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.stee.sel.cpm.CalendarProfile;
+import java.util.List;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -29,5 +30,7 @@ public interface CalendarProfileRepository extends JpaRepository<CalendarProfile
 	CalendarProfile findById(Integer id);
 
 	CalendarProfile findByName(String name);
+
+	List<CalendarProfile> findByNameLike(String name);
 
 }

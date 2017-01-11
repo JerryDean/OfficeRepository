@@ -82,7 +82,7 @@ public class CalendarProfileServiceImpl implements ICalendarProfileService {
 
     @Override
     public boolean searchByName(String name) {
-        return repository.findByName(name) == null ? false : true;
+        return repository.findByName( name ) != null;
     }
 
     @Override
@@ -449,6 +449,26 @@ public class CalendarProfileServiceImpl implements ICalendarProfileService {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public ResultData<CalendarProfile> findByNameLike(String name) {
+        ResultData<CalendarProfile> result = new ResultData<>();
+        if (null != name && !name.equals("")) {
+            try {
+                List<CalendarProfile> list = repository.findByNameLike("%" + name + "%");
+                if (null != list) {
+                    result.setData(list);
+                    result.setStatus(ResponseCode.SUCCESS.getCode());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.setStatus(ResponseCode.FAILED.getCode());
+            }
+        } else {
+            result.setStatus(ResponseCode.ERROR_PARAM.getCode());
+        }
+        return result;
     }
 
 }
