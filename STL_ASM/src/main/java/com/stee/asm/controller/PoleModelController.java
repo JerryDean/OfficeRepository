@@ -1,19 +1,14 @@
 package com.stee.asm.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.stee.asm.entity.PoleQueryBean;
 import com.stee.asm.service.IPoleModelService;
 import com.stee.sel.asm.PoleModelConfig;
 import com.stee.sel.common.ResultData;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -38,70 +33,69 @@ import com.stee.sel.common.ResultData;
 @RestController
 @RequestMapping(value = "/pole/model/config")
 public class PoleModelController {
-	@Resource(name = "poleModelServiceImpl")
-	IPoleModelService poleService;
+    @Resource(name = "poleModelServiceImpl")
+    IPoleModelService poleService;
 
-	/**
-	 * 获取所有 Lamp Pole Model 信息。 *待分页.
-	 * 
-	 * @return
-	 * @author Jerry
-	 */
-	@RequestMapping(value = "/getAll", method = RequestMethod.GET)
-	public ResultData<PoleModelConfig> getAll() {
-		return poleService.getAll();
-	}
+    /**
+     * 获取所有 Lamp Pole Model 信息。 *待分页.
+     *
+     * @return
+     * @author Jerry
+     */
+    @RequestMapping(value = "/getAll", method = RequestMethod.GET)
+    public ResultData<PoleModelConfig> getAll() {
+        return poleService.getAll();
+    }
 
-	/**
-	 * 新增或修改 Lamp Pole Model 的信息。
-	 * 
-	 * @param config
-	 * @return
-	 * @author Jerry
-	 */
-	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public Map<String, String> save(@RequestBody PoleModelConfig config) {
-		Map<String, String> map = new HashMap<>();
-		map.put("status", poleService.save(config));
-		return map;
-	}
+    /**
+     * 新增或修改 Lamp Pole Model 的信息。
+     *
+     * @param config
+     * @return
+     * @author Jerry
+     */
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    public Map<String, String> save(@RequestBody PoleModelConfig config) {
+        Map<String, String> map = new HashMap<>();
+        map.put("status", poleService.save(config));
+        return map;
+    }
 
-	// TODO Delete...
-	@Deprecated
-	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	public String update(@RequestBody PoleModelConfig config) {
-		return poleService.save(config);
-	}
+    // TODO Delete...
+    @Deprecated
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public String update(@RequestBody PoleModelConfig config) {
+        return poleService.save(config);
+    }
 
-	/**
-	 * 判断Lamp Pole Model 的名字是否存在。
-	 * 
-	 * @param name
-	 * @return
-	 * @author Jerry
-	 */
-	@RequestMapping(value = "/isNameExits/{name}", method = RequestMethod.GET)
-	public boolean isNameExits(@PathVariable("name") String name) {
-		return poleService.isNameExits(name);
-	}
+    /**
+     * 判断Lamp Pole Model 的名字是否存在。
+     *
+     * @param name
+     * @return
+     * @author Jerry
+     */
+    @RequestMapping(value = "/isNameExits/{name}", method = RequestMethod.GET)
+    public boolean isNameExits(@PathVariable("name") String name) {
+        return poleService.isNameExits(name);
+    }
 
-	/**
-	 * 删除指定的配置项
-	 * 
-	 * @param id
-	 * @return
-	 * @author Jerry
-	 */
-	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-	public Map<String, String> delete(@PathVariable("id") Integer id) {
-		Map<String, String> map = new HashMap<>();
-		map.put("status", poleService.delete(id));
-		return map;
-	}
+    /**
+     * 删除指定的配置项
+     *
+     * @param id
+     * @return
+     * @author Jerry
+     */
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+    public Map<String, String> delete(@PathVariable("id") Integer id) {
+        Map<String, String> map = new HashMap<>();
+        map.put("status", poleService.delete(id));
+        return map;
+    }
 
-	@RequestMapping(value = "/query/name/like", method = RequestMethod.POST)
-	public ResultData<PoleModelConfig> findByNameLike(@RequestBody String name) {
-		System.out.println(name);
-		return poleService.findByNameLike(name);
-	}
+    @RequestMapping(value = "/query/name/like", method = RequestMethod.POST)
+    public ResultData<PoleModelConfig> findByNameLike(@RequestBody(required = false) PoleQueryBean query) {
+        return poleService.findByQueryBean(query);
+    }
 }

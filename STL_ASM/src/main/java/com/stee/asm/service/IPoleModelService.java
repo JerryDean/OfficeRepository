@@ -1,5 +1,6 @@
 package com.stee.asm.service;
 
+import com.stee.asm.entity.PoleQueryBean;
 import com.stee.sel.asm.PoleModelConfig;
 import com.stee.sel.common.ResultData;
 
@@ -33,6 +34,6 @@ public interface IPoleModelService {
 
 	String delete(Integer id);
 
-	ResultData<PoleModelConfig> findByNameLike(String name);
+	ResultData<PoleModelConfig> findByQueryBean(PoleQueryBean name);
 
 }

@@ -1,7 +1,15 @@
 package com.stee.lim.service.impl;
 
+import com.stee.lim.dto.LampInfoDetail;
+import com.stee.lim.dto.Luminaire;
 import com.stee.lim.repository.LampInfoRepository;
+import com.stee.lim.repository.LifetimeRepository;
+import com.stee.lim.repository.LuminaireRepository;
+import com.stee.lim.repository.PoleRepository;
 import com.stee.lim.service.ILampInfoService;
+import com.stee.sel.asm.LifetimeTrackingConfig;
+import com.stee.sel.asm.LuminaireModelConfig;
+import com.stee.sel.asm.PoleModelConfig;
 import com.stee.sel.common.ResultData;
 import com.stee.sel.constant.ResponseCode;
 import com.stee.sel.lim.LampInfo;
@@ -43,15 +51,24 @@ public class LampInfoServiceImpl implements ILampInfoService {
 	@Autowired
 	LampInfoRepository repository;
 
+	@Autowired
+    LuminaireRepository luminaireRepository;
+
+	@Autowired
+    LifetimeRepository lifetimeRepository;
+
+	@Autowired
+    PoleRepository poleRepository;
+
 	@Override
-	public String update(LampInfo info) {
+	public LampInfo update(LampInfo info) {
 		try {
 			repository.save(info);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseCode.FAILED.getCode();
+			return null;
 		}
-		return ResponseCode.SUCCESS.getCode();
+		return info;
 	}
 
 	@Override
@@ -166,6 +183,56 @@ public class LampInfoServiceImpl implements ILampInfoService {
         }
         return page;
 	}
+
+	@Override
+	public boolean isIdExits(String id) {
+        if (null == id || id.equals("")) {
+            return false;
+        }else {
+            return repository.exists(id);
+        }
+    }
+
+    @Override
+    public LampInfoDetail findLampDetailInfo(String id) {
+        LampInfoDetail infoDetail = new LampInfoDetail();
+        if (null != id && !id.equals("")) {
+            LampInfo info = repository.findOne(id);
+            infoDetail.setLampInfo(info);
+            LuminaireModelConfig modelConfig = luminaireRepository.findByModelId(info.getModuleId());
+            Luminaire luminaire = new Luminaire();
+            if (null != modelConfig) {
+                luminaire.setDescription(modelConfig.getDescription());
+                luminaire.setControlProtocol(modelConfig.getControlProtocol());
+                luminaire.setLampType(modelConfig.getLampType());
+                luminaire.setLightSensor(modelConfig.isLightSensor());
+                luminaire.setManufacturer(modelConfig.getManufacturer());
+                luminaire.setModelId(modelConfig.getModelId());
+                luminaire.setMotionSensor(modelConfig.isMotionSensor());
+                luminaire.setPollingMethod(modelConfig.isPollingMethod());
+                luminaire.setRatedWatt(modelConfig.getRatedWatt());
+            }
+            LifetimeTrackingConfig lifetimeTrackingConfig = lifetimeRepository.findByLuminaireId(info.getModuleId());
+            if (null != lifetimeTrackingConfig) {
+                luminaire.setLifeTime(lifetimeTrackingConfig.getLifetime());
+            }
+            infoDetail.setLuminaire(luminaire);
+            PoleModelConfig poleModelConfig = poleRepository.findByName(info.getLampPole().getModuleId());
+            if (null == poleModelConfig) {
+                PoleModelConfig poleModelConfig1 = new PoleModelConfig();
+                poleModelConfig1.setId(null);
+                poleModelConfig1.setDescription("");
+                poleModelConfig1.setHeight(null);
+                poleModelConfig1.setName("");
+                poleModelConfig1.setPicStr("");
+                poleModelConfig1.setPicture(null);
+                infoDetail.setPole(poleModelConfig1);
+            } else {
+                infoDetail.setPole(poleModelConfig);
+            }
+        }
+        return infoDetail;
+    }
 
     private Specification<LampInfo> where(final String name, final String addr, final String gzId) {
         return new Specification<LampInfo>() {

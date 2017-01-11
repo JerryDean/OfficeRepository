@@ -1,5 +1,6 @@
 package com.stee.lim.service;
 
+import com.stee.lim.dto.LampInfoDetail;
 import com.stee.sel.common.ResultData;
 import com.stee.sel.lim.LampInfo;
 import org.springframework.data.domain.Page;
@@ -28,7 +29,7 @@ import java.util.Map;
  *  
  */
 public interface ILampInfoService {
-	String update(LampInfo info);
+	LampInfo update(LampInfo info);
 
 	void delete(String id);
 
@@ -43,4 +44,8 @@ public interface ILampInfoService {
 	List<LampInfo> getByGeoZoneId(String geoZoneId);
 
 	Page<LampInfo> getAllByFilter(Integer pageNo, Integer pageSize, String name, String addr, String gzId);
+
+	boolean isIdExits(String id);
+
+    LampInfoDetail findLampDetailInfo(String id);
 }

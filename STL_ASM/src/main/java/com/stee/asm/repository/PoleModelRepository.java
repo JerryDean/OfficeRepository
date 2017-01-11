@@ -1,10 +1,10 @@
 package com.stee.asm.repository;
 
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.stee.sel.asm.PoleModelConfig;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import java.util.List;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -26,6 +26,6 @@ import com.stee.sel.asm.PoleModelConfig;
  * --------------------------------------------------------------------------------
  *  
  */
-public interface PoleModelRepository extends JpaRepository<PoleModelConfig, Integer> {
+public interface PoleModelRepository extends JpaRepository<PoleModelConfig, Integer>,JpaSpecificationExecutor<PoleModelConfig> {
 	List<PoleModelConfig> findByNameLike(String name);
 }

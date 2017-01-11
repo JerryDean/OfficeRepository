@@ -1,19 +1,14 @@
 package com.stee.asm.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.stee.asm.entity.LuminaireQueryBean;
 import com.stee.asm.service.ILuminaireModelService;
 import com.stee.sel.asm.LuminaireModelConfig;
 import com.stee.sel.common.ResultData;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -99,9 +94,15 @@ public class LuminaireModelController {
 		return map;
 	}
 
+    /**
+     * Luminaire 模糊查询
+     *
+     * @param query
+     * @return
+     */
 	@RequestMapping(value = "/query/modelId/like", method = RequestMethod.POST)
-	public ResultData<LuminaireModelConfig> findByModelIdLike(@RequestBody String modelId) {
-		System.out.println(modelId);
-		return luminaireService.findByModelIdLike(modelId);
+	public ResultData<LuminaireModelConfig> findByModelIdLike(@RequestBody(required = false) LuminaireQueryBean query) {
+		return luminaireService.findByModelIdLike(query);
 	}
+
 }

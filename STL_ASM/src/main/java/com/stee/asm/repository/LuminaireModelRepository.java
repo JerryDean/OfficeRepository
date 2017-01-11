@@ -1,10 +1,10 @@
 package com.stee.asm.repository;
 
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.stee.sel.asm.LuminaireModelConfig;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import java.util.List;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -26,6 +26,6 @@ import com.stee.sel.asm.LuminaireModelConfig;
  * --------------------------------------------------------------------------------
  *  
  */
-public interface LuminaireModelRepository extends JpaRepository<LuminaireModelConfig, Integer> {
+public interface LuminaireModelRepository extends JpaRepository<LuminaireModelConfig, Integer>,JpaSpecificationExecutor<LuminaireModelConfig> {
 	List<LuminaireModelConfig> findByModelIdLike(String modelId);
 }

@@ -1,18 +1,25 @@
 package com.stee.asm.service.impl;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers;
-import org.springframework.stereotype.Service;
-
+import com.google.common.collect.Lists;
+import com.stee.asm.entity.PoleQueryBean;
 import com.stee.asm.repository.PoleModelRepository;
 import com.stee.asm.service.IPoleModelService;
 import com.stee.sel.asm.PoleModelConfig;
 import com.stee.sel.common.ResultData;
 import com.stee.sel.constant.ResponseCode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.List;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -91,21 +98,49 @@ public class PoleModelServiceImpl implements IPoleModelService {
 	}
 
 	@Override
-	public ResultData<PoleModelConfig> findByNameLike(String name) {
+	public ResultData<PoleModelConfig> findByQueryBean(PoleQueryBean query) {
 		ResultData<PoleModelConfig> resultData = new ResultData<>();
-		if (null == name || name.equals("")) {
-			resultData.setStatus(ResponseCode.ERROR_PARAM.getCode());
-		}
-		try {
-			List<PoleModelConfig> findByNameLike = repository.findByNameLike(name);
-			resultData.setStatus(ResponseCode.SUCCESS.getCode());
-			resultData.setData(findByNameLike);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.setStatus(ResponseCode.FAILED.getCode());
-		}
+		List<PoleModelConfig> list = Lists.newArrayList();
+        if (null == query) {
+            resultData.setStatus(ResponseCode.ERROR_PARAM.getCode());
+            try {
+                list = repository.findAll();
+                resultData.setStatus(ResponseCode.SUCCESS.getCode());
+            } catch (Exception e) {
+                resultData.setStatus(ResponseCode.FAILED.getCode());
+            }
+        } else {
+            try {
+                list = repository.findAll(where(query.getName(), query.getDescription(), query.getHeightStart(), query.getHeightEnd()));
+                resultData.setStatus(ResponseCode.SUCCESS.getCode());
+            } catch (Exception e) {
+                resultData.setStatus(ResponseCode.FAILED.getCode());
+            }
+        }
+
+        resultData.setData(list);
 
 		return resultData;
+	}
+
+	private Specification<PoleModelConfig> where(final String name, final String desc, final Double heightStart, final Double heightEnd) {
+		return new Specification<PoleModelConfig>() {
+
+			@Override
+			public Predicate toPredicate(Root<PoleModelConfig> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				List<Predicate> predicates = new ArrayList<>();
+                if (null != name && !name.equals("")) {
+                    predicates.add(cb.like(root.<String>get("name"),"%" +  name + "%"));
+                }
+                if (null != desc && !desc.equals("")) {
+                    predicates.add(cb.like(root.<String>get("description"), "%" + desc + "%"));
+                }
+                if (null != heightStart && null != heightEnd) {
+                    predicates.add(cb.between(root.<Double>get("height"), heightStart, heightEnd));
+                }
+                return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
+			}
+		};
 	}
 
 }

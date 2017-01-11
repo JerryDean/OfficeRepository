@@ -1,5 +1,6 @@
 package com.stee.asm.service;
 
+import com.stee.asm.entity.LuminaireQueryBean;
 import com.stee.sel.asm.LuminaireModelConfig;
 import com.stee.sel.common.ResultData;
 
@@ -33,6 +34,6 @@ public interface ILuminaireModelService {
 
 	String delete(Integer id);
 
-	ResultData<LuminaireModelConfig> findByModelIdLike(String modelId);
+	ResultData<LuminaireModelConfig> findByModelIdLike(LuminaireQueryBean query);
 
 }

@@ -2,10 +2,16 @@ package com.stee.lim.controller;
 
 import com.stee.lim.dto.DownloadFile;
 import com.stee.lim.dto.GeoZoneLampInfo;
+import com.stee.lim.dto.LampInfoDetail;
+import com.stee.lim.service.ICalendarProfileService;
+import com.stee.lim.service.IDimmingGroupService;
+import com.stee.lim.service.IGeoZoneService;
 import com.stee.lim.service.ILampInfoService;
 import com.stee.sel.common.ResultData;
+import com.stee.sel.gzm.GZone;
 import com.stee.sel.lim.LampInfo;
 import com.stee.sel.lim.configruation.Location;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +47,15 @@ import java.util.Map;
 public class LampInformationController {
 	@Resource(name = "lampInfoServiceImpl")
 	ILampInfoService service;
+
+	@Autowired
+    ICalendarProfileService cps;
+
+	@Autowired
+    IDimmingGroupService dgs;
+
+	@Autowired
+    IGeoZoneService gzs;
 
 	private static boolean flag = false;
 
@@ -87,8 +102,10 @@ public class LampInformationController {
 	 * @author Jerry
 	 */
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	public String update(@RequestBody LampInfo info) {
-		return service.update(info);
+	public LampInfo update(@RequestBody LampInfo info) {
+        LampInfo lampInfo = service.update(info);
+        System.out.println(lampInfo);
+        return lampInfo;
 	}
 
 	/**
@@ -210,4 +227,68 @@ public class LampInformationController {
 		// TODO Implement indeed.
 		return null;
 	}
+
+    /**
+     * 判断id是否已经存在
+     *
+     * @param id
+     * @return
+     */
+	@RequestMapping(value = "/isIdExits", method = RequestMethod.GET)
+	boolean isIdExits(@RequestParam(value = "id") String id){
+	    return service.isIdExits(id);
+    }
+
+    /**
+     * 获取Calendar Profile 的Name的集合
+     *
+     * @return
+     */
+    @RequestMapping(value = "/calendar/profiles/name/list", method = RequestMethod.GET)
+    List<String> getCalendarProfileIds () {
+	    return cps.getCalendarProfileIds();
+    }
+
+    /**
+     * 获取DimmingGroup 的Name的集合
+     *
+     * @return
+     */
+    @RequestMapping(value = "/dimming/groups/name/list", method = RequestMethod.GET)
+    List<String> getDimmingGroupIds() {
+        return dgs.getDimmingGroupIds();
+    }
+
+    /**
+     * 获取GeoZone 的Name的集合
+     *
+     * @return
+     */
+    @RequestMapping(value = "/geozones/name/list", method = RequestMethod.GET)
+    List<String> getGeoZoneIds() {
+        return gzs.getGeoZoneIds();
+    }
+
+    /**
+     * 通过名字获取GZone
+     *
+     * @param name
+     * @return
+     */
+    @RequestMapping(value = "/geozone/findByName", method = RequestMethod.POST)
+    GZone findGZoneByName(@RequestBody String name) {
+        return gzs.findGZoneByName(name);
+    }
+
+    /**
+     * 通过ID获取灯的详细信息
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/find/byid/detail", method = RequestMethod.GET)
+    LampInfoDetail findLampDetailInfo(@RequestParam(name = "id") String id) {
+        return service.findLampDetailInfo(id);
+    }
+
 }
