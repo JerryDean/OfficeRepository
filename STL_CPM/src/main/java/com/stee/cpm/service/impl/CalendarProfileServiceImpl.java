@@ -418,8 +418,8 @@ public class CalendarProfileServiceImpl implements ICalendarProfileService {
                             if (pattern[0].equals(RecurrentPattern.DateBasedDDMM.getPattern())) {
                                 String date = pattern[1];
                                 String[] split = date.split("\\.");
-                                String day = split[1];
-                                String month = split[2];
+                                String day = split[0];
+                                String month = split[1];
                                 if (dayOfMonth == Integer.valueOf(day) && monthOfYear == Integer.valueOf(month) - 1) {
                                     c2d.add(new Daily2Draw(dpName, sdf.format(sCalendar.getTime()) + "T0" + String.valueOf(priority), color));
                                 }
@@ -430,7 +430,7 @@ public class CalendarProfileServiceImpl implements ICalendarProfileService {
                                 String day = split[0];
                                 String month = split[1];
                                 String year1 = split[2];
-                                if (dayOfMonth == Integer.valueOf(day) && monthOfYear == Integer.valueOf(month) + 1 && year == Integer.valueOf(year1)) {
+                                if (dayOfMonth == Integer.valueOf(day) && monthOfYear == Integer.valueOf(month) - 1 && year == Integer.valueOf(year1)) {
                                     c2d.add(new Daily2Draw(dpName, sdf.format(sCalendar.getTime()) + "T0" + String.valueOf(priority), color));
                                 }
                             }
@@ -470,5 +470,6 @@ public class CalendarProfileServiceImpl implements ICalendarProfileService {
         }
         return result;
     }
+
 
 }

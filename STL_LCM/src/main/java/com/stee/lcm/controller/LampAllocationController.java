@@ -52,8 +52,7 @@ public class LampAllocationController {
 		UpdateLampInfoClient updateLampInfoClient = new UpdateLampInfoClient();
 		try {
 			// TODO Do save action...
-
-			updateLampInfoClient.sendCommand(cc);
+			System.out.println(updateLampInfoClient.sendCommand(cc));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
