@@ -57,9 +57,12 @@ public class InitialConfiguration implements CommandLineRunner {
     @Override
     public void run(String... arg0) throws Exception {
         webSocketMode = Integer.valueOf(resource.getString("websocket.mode"));
+        // 初始化CMS-NMS连接参数
         initProperties();
-        initWebSocket();
+        // 初始化轮询任务
         initPollingTimer();
+        // 初始化WebSocket
+        initWebSocket();
     }
 
     private void initProperties() {
@@ -89,6 +92,10 @@ public class InitialConfiguration implements CommandLineRunner {
                 }
                 if (null != connectionParamsSet && !connectionParamsSet.isEmpty()) {
                     repository.save(connectionParamsSet);
+                    //将配置文件中的配置存入Map 中
+                    connectionParamsSet.forEach(param -> {
+                        realTimeService.map.put(param.getKey(), param.getValue());
+                    });
                 }
             } else {
                 // TODO: 2016/12/14 从数据库获取数据，并写入Properties
@@ -102,7 +109,8 @@ public class InitialConfiguration implements CommandLineRunner {
             RestTemplate restTemplate = new RestTemplate();
             obj = restTemplate.getForObject(resource.getString("scm.rest.get.value") + "Polling_Interval", Integer.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
+            obj = 5;
         }
         if (null != obj) {
             try {
@@ -113,8 +121,8 @@ public class InitialConfiguration implements CommandLineRunner {
         }
 
         executorService.scheduleAtFixedRate(() -> {
-            realTimeService.testPollingStatus();
-        }, interval, interval, TimeUnit.MINUTES);
+            realTimeService.getPollingStatus();
+        }, 0, interval, TimeUnit.MINUTES);
     }
 
     private void initWebSocket() {

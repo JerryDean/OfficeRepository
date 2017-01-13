@@ -85,6 +85,9 @@ public class RealTimeServiceImpl implements IRealTimeService {
 
     @Override
     public String send(ConfigCommand cc) throws Throwable {
+        if (null == cc) {
+            return "Request param is null -> " + "ConfigCommand = [" + cc + "]";
+        }
         String id = cc.getDeviceId();
         Commands commands = new Commands();
         List<Set> list = Lists.newArrayList();
@@ -93,13 +96,13 @@ public class RealTimeServiceImpl implements IRealTimeService {
                 return "Auto mode..";
             }
             LampInfo lampInfo = lampRepo.findOne(id);
+            if (null == lampInfo) {
+                System.out.println("Error: > The lamp be selected can not find in the repository.");
+                return "Error: > The lamp be selected can not find in the repository.";
+            }
             lampInfo.getLampControl().setControlMode(ControlMode.Manual);
+            // 更新Lamp控制模式
             lampRepo.save(lampInfo);
-//            Set set = new Set();
-//			set.setId(id);
-//			set.setMeaning("LampCommandMode");
-//			set.setValue(cc.getControlMode() == 0 ? "MANUAL" : "AUTOMATIC");
-//			list.add(set);
         }
         if (null != cc.getLampLevel()) {
             Set set = new Set();
@@ -162,6 +165,7 @@ public class RealTimeServiceImpl implements IRealTimeService {
 
         HttpEntity<?> httpEntity = new HttpEntity<>(commands, headers);
         System.out.println("Request:" + httpEntity);
+        System.out.println("XML:" + Adaptor.beanToXml(commands));
         RealtimeNmsResult response = template.postForObject(realTimeUri, httpEntity, RealtimeNmsResult.class);
         System.out.println("Response:" + response);
         if (response.getStatus().equals("SUCCESS")) {
@@ -221,22 +225,6 @@ public class RealTimeServiceImpl implements IRealTimeService {
         }
         // TODO: 2016/12/18 In addition of failed.Asyn advice client too.
         return null;
-    }
-
-    public void testPollingStatus() {
-        Commands commands = new Commands();
-        List<Get> gets = Lists.newArrayList();
-        List<LampInfo> lampInfos = lampRepo.findAll();
-        if (null != lampInfos && !lampInfos.isEmpty()) {
-            for (LampInfo lampInfo : lampInfos) {
-                String id = lampInfo.getId();
-                Get get = new Get();
-                get.setId(id);
-                gets.add(get);
-            }
-        }
-        commands.setGet(gets);
-        sendRealTime(commands);
     }
 
     /**
@@ -532,4 +520,5 @@ public class RealTimeServiceImpl implements IRealTimeService {
         commands.setGet(getList);
         return commands;
     }
+
 }

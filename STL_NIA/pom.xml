@@ -31,7 +31,7 @@
         <repository>
             <id>streetlightRepos</id>
             <name>Street Lighting</name>
-            <url>http://192.168.1.92:9999/nexus/content/repositories/streetlightRepos</url>
+            <url>http://66.96.200.27:8081/nexus/content/repositories/streetlightRepos</url>
             <layout>default</layout>
         </repository>
     </repositories>

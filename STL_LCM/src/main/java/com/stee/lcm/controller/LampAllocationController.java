@@ -1,5 +1,7 @@
 package com.stee.lcm.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,6 +59,17 @@ public class LampAllocationController {
 			e.printStackTrace();
 		}
 		return cc;
+	}
+
+	public static void main(String[] args) throws JsonProcessingException {
+		ConfigCommand configCommand = new ConfigCommand();
+		configCommand.setCommissionDate(null);
+		configCommand.setControlMode(null);
+		configCommand.setLampLevel(null);
+		configCommand.setDeviceId("");
+		configCommand.setLampSwitch(false);
+		ObjectMapper mapper = new ObjectMapper();
+		System.out.println(mapper.writeValueAsString(configCommand));
 	}
 
 }

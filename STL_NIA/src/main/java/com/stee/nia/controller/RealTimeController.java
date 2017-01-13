@@ -47,5 +47,4 @@ public class RealTimeController {
 	public String send(@RequestBody ConfigCommand cc) throws Throwable {
 		return realTimeService.send(cc);
 	}
-
 }

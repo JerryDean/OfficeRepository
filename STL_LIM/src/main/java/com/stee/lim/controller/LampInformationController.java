@@ -286,7 +286,7 @@ public class LampInformationController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/find/byid/detail", method = RequestMethod.GET)
+	@RequestMapping(value = "/find/byid/detail", method = RequestMethod.GET)
     LampInfoDetail findLampDetailInfo(@RequestParam(name = "id") String id) {
         return service.findLampDetailInfo(id);
     }

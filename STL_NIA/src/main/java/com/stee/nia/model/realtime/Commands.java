@@ -1,8 +1,8 @@
 package com.stee.nia.model.realtime;
 
-import java.util.List;
-
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -38,6 +38,7 @@ public class Commands {
 		this.set = set;
 	}
 
+	@XmlElement(required = false)
 	public List<Get> getGet() {
 		return get;
 	}
