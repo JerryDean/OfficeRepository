@@ -61,15 +61,4 @@ public class LampAllocationController {
 		return cc;
 	}
 
-	public static void main(String[] args) throws JsonProcessingException {
-		ConfigCommand configCommand = new ConfigCommand();
-		configCommand.setCommissionDate(null);
-		configCommand.setControlMode(null);
-		configCommand.setLampLevel(null);
-		configCommand.setDeviceId("");
-		configCommand.setLampSwitch(false);
-		ObjectMapper mapper = new ObjectMapper();
-		System.out.println(mapper.writeValueAsString(configCommand));
-	}
-
 }
