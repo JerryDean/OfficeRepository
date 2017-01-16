@@ -161,7 +161,7 @@ public class RealTimeServiceImpl implements IRealTimeService {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization",
                 "OAuth oauth_grant_type=\"password\",oauth_version=\"2.0\",oauth_access_token=\"" + token + "\"");
-        headers.set("Content-Type", "application/xml;charset=UTF-8");
+        headers.set("Content-Type", "text/xml;charset=UTF-8");
 
         HttpEntity<?> httpEntity = new HttpEntity<>(commands, headers);
         System.out.println("Request:" + httpEntity);
@@ -215,7 +215,7 @@ public class RealTimeServiceImpl implements IRealTimeService {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization",
                 "OAuth oauth_grant_type=\"password\",oauth_version=\"2.0\",oauth_access_token=\"" + token + "\"");
-        headers.set("Content-Type", "application/xml;charset=UTF-8");
+        headers.set("Content-Type", "text/xml;charset=UTF-8");
         HttpEntity<?> httpEntity = new HttpEntity<>(config, headers);
         System.out.println("Request:" + httpEntity);
         RealtimeNmsResult realtimeNmsResult = template.postForObject(scheduleUri, httpEntity, RealtimeNmsResult.class);
@@ -239,7 +239,7 @@ public class RealTimeServiceImpl implements IRealTimeService {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization",
                 "OAuth oauth_grant_type=\"password\",oauth_version=\"2.0\",oauth_access_token=\"" + token + "\"");
-        headers.set("Content-Type", "application/xml;charset=UTF-8");
+        headers.set("Content-Type", "text/xml;charset=UTF-8");
 
         HttpEntity<?> httpEntity = new HttpEntity<>(commands, headers);
         RealtimeNmsResult response = template.postForObject(realTimeUri, httpEntity, RealtimeNmsResult.class);
