@@ -32,6 +32,7 @@ import com.stee.stl.lfm.service.IBurningHourAlertService;
  * --------------------------------------------------------------------------------
  *  
  */
+@Deprecated
 @RestController
 @RequestMapping(value = "/burninghour/alert")
 public class BurningHourAlertController {

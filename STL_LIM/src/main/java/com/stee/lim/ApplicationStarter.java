@@ -2,6 +2,7 @@ package com.stee.lim;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -25,6 +26,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 
 @SpringBootApplication
+@EnableScheduling
 public class ApplicationStarter {
 
 	public static void main(String[] args) {

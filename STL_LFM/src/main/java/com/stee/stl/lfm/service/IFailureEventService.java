@@ -1,5 +1,6 @@
 package com.stee.stl.lfm.service;
 
+import com.stee.stl.lfm.entity.FailureEventQueryBean;
 import org.springframework.data.domain.Page;
 
 import com.stee.sel.lfm.FailureEvent;
@@ -28,4 +29,5 @@ public interface IFailureEventService {
 
 	Page<FailureEvent> findByEventSource(String es, Integer pageNo, Integer pageSize, String direction);
 
+    Page<FailureEvent> findByQueryBean(Integer pageNo, Integer pageSize, String direction, String sortBy, FailureEventQueryBean queryBean);
 }

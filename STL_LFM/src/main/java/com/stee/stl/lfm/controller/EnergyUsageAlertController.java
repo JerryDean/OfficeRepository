@@ -32,6 +32,7 @@ import com.stee.stl.lfm.service.IEnergyUsageAlertService;
  * --------------------------------------------------------------------------------
  *  
  */
+@Deprecated
 @RestController
 @RequestMapping(value = "/energyusage/alert")
 public class EnergyUsageAlertController {

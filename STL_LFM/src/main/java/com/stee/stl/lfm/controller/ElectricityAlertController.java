@@ -1,20 +1,15 @@
 package com.stee.stl.lfm.controller;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.stee.sel.lfm.AlertParam;
 import com.stee.sel.lfm.ElectricAlertInfo;
 import com.stee.stl.lfm.entity.QueryBean;
 import com.stee.stl.lfm.service.IElectricityAlertService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -36,6 +31,7 @@ import com.stee.stl.lfm.service.IElectricityAlertService;
  * --------------------------------------------------------------------------------
  *  
  */
+@Deprecated
 @RestController
 @RequestMapping(value = "/eletricparams/alert")
 public class ElectricityAlertController {

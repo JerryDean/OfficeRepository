@@ -1,24 +1,10 @@
 package com.stee.sel.lim.status;
 
-import java.util.Date;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.stee.sel.constant.OperationState;
+
+import javax.persistence.*;
+import java.util.Date;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -140,7 +126,7 @@ public class LampStatus {
 		this.burningHour = burningHour;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "usage_id")
 	public EnergyUsage getEnergyUsage() {
 		return energyUsage;

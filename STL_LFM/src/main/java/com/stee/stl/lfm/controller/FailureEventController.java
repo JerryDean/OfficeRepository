@@ -1,18 +1,16 @@
 package com.stee.stl.lfm.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.google.common.collect.Lists;
 import com.stee.sel.lfm.EventSource;
+import com.stee.sel.lfm.EventTypeEnum;
 import com.stee.sel.lfm.FailureEvent;
+import com.stee.stl.lfm.entity.FailureEventQueryBean;
 import com.stee.stl.lfm.service.IFailureEventService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -40,6 +38,7 @@ public class FailureEventController {
 	@Autowired
 	IFailureEventService service;
 
+	@Deprecated
 	@RequestMapping(value = "/findByEventSource", method = RequestMethod.GET)
 	Page<FailureEvent> findByEventSource(@RequestParam(name = "eventSource", defaultValue = "none") String es,
 			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
@@ -49,6 +48,15 @@ public class FailureEventController {
         return service.findByEventSource(es, pageNo, pageSize, direction);
 	}
 
+	@RequestMapping(value = "/findby/querybean", method = RequestMethod.POST)
+	Page<FailureEvent> findByQueryBean(@RequestParam(name = "pageNo",defaultValue = "0") Integer pageNo,
+                                       @RequestParam(name = "pageSize",defaultValue = "15") Integer pageSize,
+                                       @RequestParam(name = "sort", defaultValue = "DESC") String direction,
+                                       @RequestParam(name = "sortBy", defaultValue = "severityLevel") String sortBy,
+                                       @RequestBody FailureEventQueryBean queryBean) {
+	    return service.findByQueryBean(pageNo, pageSize, direction, sortBy, queryBean);
+    }
+
 	@RequestMapping(value = "/fetch/enum", method = RequestMethod.GET)
 	List<String> getEventSoureEnum() {
 		List<String> list = Lists.newArrayList();
@@ -57,4 +65,14 @@ public class FailureEventController {
 		}
 		return list;
 	}
+
+	@RequestMapping(value = "/fetch/type", method = RequestMethod.GET)
+	List<String> getEventTypeEnum() {
+        List<String> list = Lists.newArrayList();
+        for (EventTypeEnum eventTypeEnum : EventTypeEnum.values()) {
+            list.add(eventTypeEnum.toString());
+        }
+        return list;
+    }
+
 }

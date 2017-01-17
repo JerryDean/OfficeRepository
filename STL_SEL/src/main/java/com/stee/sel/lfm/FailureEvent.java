@@ -1,16 +1,7 @@
 package com.stee.sel.lfm;
 
+import javax.persistence.*;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -59,8 +50,22 @@ public class FailureEvent {
 	 * Only for Alert or Alarm.Severity level.
 	 */
 	private Integer severityLevel;
+    /**
+     * Event Type.(Burning Hour Alert, Electricity Params Alert,Energy Usage Alert,Lamp failure)
+     */
+	private EventTypeEnum eventType;
 
-	@Id
+	@Column(name = "event_type")
+    @Enumerated(value = EnumType.STRING)
+    public EventTypeEnum getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(EventTypeEnum eventType) {
+        this.eventType = eventType;
+    }
+
+    @Id
 	@GeneratedValue
 	public Integer getId() {
 		return id;
@@ -116,10 +121,16 @@ public class FailureEvent {
 		this.occurDate = occurDate;
 	}
 
-	@Override
-	public String toString() {
-		return "FailureEvent [id=" + id + ", eventSource=" + eventSource + ", occurDate=" + occurDate + ", objectId="
-				+ objectId + ", message=" + message + ", severityLevel=" + severityLevel + "]";
-	}
-
+    @Override
+    public String toString() {
+        return "FailureEvent{" +
+                "id=" + id +
+                ", eventSource=" + eventSource +
+                ", occurDate=" + occurDate +
+                ", objectId='" + objectId + '\'' +
+                ", message='" + message + '\'' +
+                ", severityLevel=" + severityLevel +
+                ", eventType='" + eventType + '\'' +
+                '}';
+    }
 }

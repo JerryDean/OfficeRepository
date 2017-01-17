@@ -1,18 +1,11 @@
 package com.stee.sel.lim;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
 import com.stee.sel.lim.configruation.LampPole;
 import com.stee.sel.lim.configruation.Location;
 import com.stee.sel.lim.control.LampControl;
 import com.stee.sel.lim.status.LampStatus;
+
+import javax.persistence.*;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -143,7 +136,7 @@ public class LampInfo {
 		this.moduleId = moduleId;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "location_id")
 	public Location getLocation() {
 		return location;
@@ -170,7 +163,7 @@ public class LampInfo {
 		this.geoZoneId = geoZoneId;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "pole_id")
 	public LampPole getLampPole() {
 		return lampPole;
@@ -180,7 +173,7 @@ public class LampInfo {
 		this.lampPole = lampPole;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "control_id")
 	public LampControl getLampControl() {
 		return lampControl;
@@ -190,7 +183,7 @@ public class LampInfo {
 		this.lampControl = lampControl;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "status_id")
 	public LampStatus getLampStatus() {
 		return lampStatus;

@@ -20,6 +20,7 @@ package com.stee.stl.lfm.entity;
  * --------------------------------------------------------------------------------
  *  
  */
+@Deprecated
 public class QueryBean {
 	private Integer beginning;
 	private Integer ending;
