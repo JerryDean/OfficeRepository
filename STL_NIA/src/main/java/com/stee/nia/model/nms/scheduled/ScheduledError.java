@@ -1,7 +1,7 @@
 package com.stee.nia.model.nms.scheduled;
 
-import com.sun.xml.internal.txw2.annotation.XmlAttribute;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 

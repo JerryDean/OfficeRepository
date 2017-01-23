@@ -1,7 +1,5 @@
 package com.stee.nia.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stee.nia.service.IParamHolderService;
 import com.stee.nia.service.impl.RealTimeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
@@ -61,11 +58,4 @@ public class ParamHolderController {
 	public Map<String, String> fetchConfig() {
 		return RealTimeServiceImpl.map;
 	}
-
-	public static void main(String[] args) throws JsonProcessingException {
-		Map<String, String> map = new HashMap<>();
-		map.put("nms.auth.id", "root1");
-        ObjectMapper mapper = new ObjectMapper();
-        System.out.println(mapper.writeValueAsString(map));
-    }
 }
