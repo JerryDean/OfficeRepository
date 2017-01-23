@@ -1,25 +1,8 @@
 package com.stee.nia.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
 import com.google.common.collect.Lists;
 import com.stee.nia.model.scheduled.Calendar;
-import com.stee.nia.model.scheduled.Command;
-import com.stee.nia.model.scheduled.Configuration;
-import com.stee.nia.model.scheduled.ControlProgram;
-import com.stee.nia.model.scheduled.Device;
-import com.stee.nia.model.scheduled.ParamTypeOne;
-import com.stee.nia.model.scheduled.Rule;
-import com.stee.nia.model.scheduled.Schedulers;
+import com.stee.nia.model.scheduled.*;
 import com.stee.nia.repository.DailyProfileRepository;
 import com.stee.nia.repository.LuminaireRepository;
 import com.stee.nia.service.IScheduledService;
@@ -29,6 +12,12 @@ import com.stee.sel.cpm.SchedulingRule;
 import com.stee.sel.dpm.DailyProfile;
 import com.stee.sel.dpm.Daily_command;
 import com.stee.sel.lim.LampInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -63,6 +52,9 @@ public class ScheduledServiceImpl implements IScheduledService {
 	@Autowired
 	DailyProfileRepository dpRepo;
 
+	@Autowired
+    RealTimeServiceImpl realTimeService;
+
 	@Override
 	public void commission(CalendarProfile cp) {
 		if (null == cp) {
@@ -76,14 +68,13 @@ public class ScheduledServiceImpl implements IScheduledService {
 
 			RestTemplate restTemplate = new RestTemplate();
 			@SuppressWarnings("unchecked")
-			List<String> forObject = restTemplate.getForObject(url, List.class);
+			List<String> forObject = restTemplate.getForObject(url + dimmingGroupId, List.class);
 			// forObject DimmingGroup 的membership.
 			if (null != forObject && !forObject.isEmpty()) {
 				List<LampInfo> allDevices = new ArrayList<>();
 				forObject.forEach(str -> {
-					RestTemplate restTemplate2 = new RestTemplate();
 					@SuppressWarnings("unchecked")
-					List<LampInfo> devices = restTemplate2.getForObject(url2, List.class);
+					List<LampInfo> devices = restTemplate.getForObject(url2 + str, List.class);
 					if (null != devices && !devices.isEmpty()) {
 						allDevices.addAll(devices);
 					}
@@ -96,7 +87,8 @@ public class ScheduledServiceImpl implements IScheduledService {
 				this.configuration = new Configuration();
 				this.configuration.setDevices(devices);
 				this.configuration.setSchedulers(schedulers);
-			}
+                realTimeService.sendScheduled(configuration);
+            }
 		}
 	}
 
@@ -216,12 +208,17 @@ public class ScheduledServiceImpl implements IScheduledService {
 				paramTypeOne.setResourceId(controlProtocol);
 				params.add(paramTypeOne);
 				// Address
-				String address = lampInfo.getAddress();
+//				String address = lampInfo.getAddress();
 				ParamTypeOne addr = new ParamTypeOne();
 				addr.setKey("address");
-				addr.setValue(address);
+				// Possible value null string , 1, 2
+				addr.setValue("");
 				params.add(addr);
-				// InstallDate
+				// ballast.type
+                ParamTypeOne ballastType = new ParamTypeOne();
+                ballastType.setKey("ballast.type");
+                ballastType.setValue(controlProtocol);
+                // InstallDate
 				Date installedDate = lampInfo.getLampStatus().getInstalledDate();
 				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 				String formatDate = simpleDateFormat.format(installedDate);

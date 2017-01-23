@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -48,25 +47,26 @@ public class FailureEventServiceImpl implements IFailureEventService {
 	@Autowired
 	FailureEventRepository repository;
 
-	@Override
-	public Page<FailureEvent> findByEventSource(String es, Integer pageNo, Integer pageSize, String direction) {
-		Page<FailureEvent> page = null;
-		if (direction == null) {
-			direction = "DESC";
-		}
-		PageRequest pageRequest = new PageRequest(pageNo, pageSize,
-				new Sort(direction.equals("DESC") ? Direction.DESC : Direction.ASC, "severityLevel"));
-		if (!es.equals("none")) {
-			page = repository.findByEventSource(EventSource.valueOf(es), pageRequest);
-		} else {
-			page = repository.findAll(pageRequest);
-		}
-		return page;
-	}
 
     @Override
-    public Page<FailureEvent> findByQueryBean(Integer pageNo, Integer pageSize, String direction, String sortBy, FailureEventQueryBean queryBean) {
-		PageRequest pageRequest = new PageRequest(pageNo, pageSize, new Sort(direction == "DESC" ? Direction.DESC : Direction.ASC, sortBy));
+    public Page<FailureEvent> findByQueryBean(FailureEventQueryBean queryBean) {
+        Integer pageNo = queryBean.getPageNo();
+        Integer pageSize = queryBean.getPageSize();
+        FailureEventQueryBean.SeveritySort severitySort = queryBean.getSeveritySort();
+        FailureEventQueryBean.DateSort dateSort = queryBean.getDateSort();
+        List<Sort.Order> orders = Lists.newArrayList();
+        if (null != severitySort && !Strings.isNullOrEmpty(severitySort.sort)) {
+            orders.add(new Sort.Order(severitySort.sort.equals("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC, "severityLevel"));
+        }
+        if (null != dateSort && !Strings.isNullOrEmpty(dateSort.sort)) {
+            orders.add(new Sort.Order(dateSort.sort.equals("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC, "occurDate"));
+        }
+        PageRequest pageRequest = null;
+        if (!orders.isEmpty()) {
+            pageRequest = new PageRequest(pageNo, pageSize, new Sort(orders));
+        } else {
+            pageRequest = new PageRequest(pageNo, pageSize);
+        }
         if (null == queryBean) {
             return repository.findAll(pageRequest);
         } else {
@@ -96,6 +96,10 @@ public class FailureEventServiceImpl implements IFailureEventService {
                 }
                 if (null != queryBean.getSeverityStart() && null != queryBean.getSeverityEnd()) {
                     predicates.add(criteriaBuilder.between(root.<Integer>get("severityLevel"), queryBean.getSeverityStart(), queryBean.getSeverityEnd()));
+                } else if (null == queryBean.getSeverityStart() && null != queryBean.getSeverityEnd()) {
+                    predicates.add(criteriaBuilder.equal(root.<Integer>get("severityLevel"), queryBean.getSeverityEnd()));
+                } else if (null != queryBean.getSeverityStart() && null == queryBean.getSeverityEnd()) {
+                    predicates.add(criteriaBuilder.equal(root.<Integer>get("severityLevel"), queryBean.getSeverityStart()));
                 }
                 return criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
             }

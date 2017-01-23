@@ -7,6 +7,7 @@ import com.stee.nia.model.nms.auth.AuthResult;
 import com.stee.nia.model.nms.realtime.RealtimeNmsResult;
 import com.stee.nia.model.nms.realtime.RealtimeResponse;
 import com.stee.nia.model.nms.realtime.RealtimeResultObject;
+import com.stee.nia.model.nms.scheduled.ScheduledResult;
 import com.stee.nia.model.realtime.Commands;
 import com.stee.nia.model.realtime.Get;
 import com.stee.nia.model.realtime.Set;
@@ -56,31 +57,23 @@ import java.util.*;
  */
 @Service("realTimeServiceImpl")
 public class RealTimeServiceImpl implements IRealTimeService {
+    public static Map<String, String> map = new HashMap<>();
+    private static RestTemplate template = new RestTemplate();
+    private static String token;
+    private static String userName;
+    private static String password;
+    private static String authUri;
+    private static String realTimeUri;
+    private static String scheduleUri;
+    private static List<Get> assembGetList = new ArrayList<>();
+    private static List<String> pollingIds = new ArrayList<>();
+    public static List<LampPointMeanings> assembles = new ArrayList<>();
     @Autowired
     LampPointMeaningsRepository repository;
-
     @Autowired
     LampInfoRepository lampRepo;
-
     @Autowired
     LuminaireRepository luminaireRepo;
-
-    private static RestTemplate template = new RestTemplate();
-
-    private static String token;
-
-    private static String userName;
-
-    private static String password;
-
-    private static String authUri;
-
-    private static String realTimeUri;
-
-    private static String scheduleUri;
-
-    public static Map<String, String> map = new HashMap<>();
-
     ResourceBundle resourceBundle = ResourceBundle.getBundle("config");
 
     @Override
@@ -92,23 +85,17 @@ public class RealTimeServiceImpl implements IRealTimeService {
         Commands commands = new Commands();
         List<Set> list = Lists.newArrayList();
         if (null != cc.getControlMode()) {
-            if (cc.getControlMode() == 1) {
-                return "Auto mode..";
+            if (cc.getControlMode() != 1 && null != cc.getLampLevel()) {
+                Set set = new Set();
+                set.setId(id);
+                set.setMeaning("LampLevelCommand");
+                set.setValue(String.valueOf(cc.getLampLevel()));
+                list.add(set);
             }
-            LampInfo lampInfo = lampRepo.findOne(id);
-            if (null == lampInfo) {
-                System.out.println("Error: > The lamp be selected can not find in the repository.");
-                return "Error: > The lamp be selected can not find in the repository.";
-            }
-            lampInfo.getLampControl().setControlMode(ControlMode.Manual);
-            // 更新Lamp控制模式
-            lampRepo.save(lampInfo);
-        }
-        if (null != cc.getLampLevel()) {
             Set set = new Set();
             set.setId(id);
-            set.setMeaning("LampLevelCommand");
-            set.setValue(String.valueOf(cc.getLampLevel()));
+            set.setMeaning("LampCommandMode");
+            set.setValue(cc.getControlMode() == 0 ? "MANUAL" : "AUTOMATIC");
             list.add(set);
         }
         commands.setSet(list);
@@ -135,7 +122,8 @@ public class RealTimeServiceImpl implements IRealTimeService {
         // 重载配置参数
         reloadProps();
         HttpHeaders headers = new HttpHeaders();
-        headers.set("WebNMS", "version=\"5.2\",data_type=\"XML\"");
+//        headers.set("WebNMS", "version=\"5.2\",data_type=\"XML\"");
+        headers.set("Accept", "text/xml");
         headers.set("Authorization", "OAuth oauth_version=\"2.0\",oauth_grant_type=\"password\",oauth_client_id=\""
                 + userName + "\",oauth_password=\"" + password + "\"");
         HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -151,6 +139,7 @@ public class RealTimeServiceImpl implements IRealTimeService {
     public String sendRealTime(Commands commands) {
         System.out.println("commands = [" + commands + "]");
         if (resourceBundle.getString("environment").equals("0")) {
+            // 此情况仅用于适用模拟器返回数据的情况。
             reloadProps();
             System.out.println("Reload properties success.");
         } else {
@@ -162,6 +151,7 @@ public class RealTimeServiceImpl implements IRealTimeService {
         headers.set("Authorization",
                 "OAuth oauth_grant_type=\"password\",oauth_version=\"2.0\",oauth_access_token=\"" + token + "\"");
         headers.set("Content-Type", "text/xml;charset=UTF-8");
+        headers.set("Accept", "text/xml");
 
         HttpEntity<?> httpEntity = new HttpEntity<>(commands, headers);
         System.out.println("Request:" + httpEntity);
@@ -172,37 +162,53 @@ public class RealTimeServiceImpl implements IRealTimeService {
             if (null != commands.getSet() && !commands.getSet().isEmpty()) {
                 for (Set set : commands.getSet()) {
                     String id = set.getId();
-                    String value = set.getValue();
                     LampInfo one = lampRepo.findOne(id);
-                    one.getLampStatus().setLampSwitch(Integer.valueOf(value) != 0);
+                    if (null == one) {
+                        continue;
+                    }
+                    String meaning = set.getMeaning();
+                    String value = set.getValue();
+                    if (meaning.equals("LampCommandMode")) {
+                        one.getLampControl().setControlMode(value.equals("AUTOMATIC") ? ControlMode.Automatic :  ControlMode.Manual);
+                    } else {
+                        one.getLampStatus().setLampLevel(Integer.valueOf(value));
+                    }
                     lampRepo.save(one);
                 }
             }
-            RealtimeResultObject resultObject = response.getResultObject();
-            List<RealtimeResponse> responses = Lists.newArrayList();
-            if (null != resultObject) {
-                responses = resultObject.getResponses();
-            }
-            if (null != commands.getGet() && !commands.getGet().isEmpty()) {
-                for (int i = 0; i < commands.getGet().size(); i++) {
-                    String id = commands.getGet().get(i).getId();
-                    if (null != responses && !responses.isEmpty()) {
-                        Object value = responses.get(i).getValue();
-                        Integer burningHour = (Integer) value;
-                        LampInfo lampInfo = lampRepo.findOne(id);
-                        lampInfo.getLampStatus().setBurningHour(burningHour);
-                        lampRepo.save(lampInfo);
-                    }
-                }
-            }
-        }
 
+            // 更新设备状态
+            if (null != commands.getGet() && !commands.getGet().isEmpty()) {
+                RealtimeResultObject resultObject = response.getResultObject();
+                List<RealtimeResponse> responses = resultObject.getResponses();
+                List<LampInfo> dealingWithStatus = dealingWithStatus(responses);
+                updateDevices(dealingWithStatus);
+            }
+//            RealtimeResultObject resultObject = response.getResultObject();
+//            List<RealtimeResponse> responses = Lists.newArrayList();
+//            if (null != resultObject) {
+//                responses = resultObject.getResponses();
+//            }
+//            if (null != commands.getGet() && !commands.getGet().isEmpty()) {
+//                for (int i = 0; i < commands.getGet().size(); i++) {
+//                    String id = commands.getGet().get(i).getId();
+//                    if (null != responses && !responses.isEmpty()) {
+//                        Object value = responses.get(i).getValue();
+//                        Integer burningHour = (Integer) value;
+//                        LampInfo lampInfo = lampRepo.findOne(id);
+//                        lampInfo.getLampStatus().setBurningHour(burningHour);
+//                        lampRepo.save(lampInfo);
+//                    }
+//                }
+//            }
+        }
+// Token Expired
 //        if (response.getMessage().contains("access_token_expired")) {
 //			getToken();
 //			sendRealTime(commands);
 //			return "access_token_expired";
 //		}
-        return Adaptor.beanToXml(response);
+        return response.getMessage();
     }
 
     public String sendScheduled(Configuration config) {
@@ -216,11 +222,13 @@ public class RealTimeServiceImpl implements IRealTimeService {
         headers.set("Authorization",
                 "OAuth oauth_grant_type=\"password\",oauth_version=\"2.0\",oauth_access_token=\"" + token + "\"");
         headers.set("Content-Type", "text/xml;charset=UTF-8");
+        headers.set("Accept", "text/xml");
+
         HttpEntity<?> httpEntity = new HttpEntity<>(config, headers);
         System.out.println("Request:" + httpEntity);
-        RealtimeNmsResult realtimeNmsResult = template.postForObject(scheduleUri, httpEntity, RealtimeNmsResult.class);
-        System.out.println("Response:" + realtimeNmsResult);
-        if (realtimeNmsResult.getStatus().equals("SUCCESS")) {
+        ScheduledResult scheduledResult = template.postForObject(scheduleUri, httpEntity, ScheduledResult.class);
+        System.out.println("Response:" + scheduledResult);
+        if (scheduledResult.getStatus().equals("SUCCESS")) {
             // TODO: 2016/12/18 Asyn advice client the commission status.
         }
         // TODO: 2016/12/18 In addition of failed.Asyn advice client too.
@@ -235,30 +243,10 @@ public class RealTimeServiceImpl implements IRealTimeService {
     public void getPollingStatus() {
         // 获取Token.
         getToken();
+        // 拼装Get Xml数据
         Commands commands = getPollingCommands();
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",
-                "OAuth oauth_grant_type=\"password\",oauth_version=\"2.0\",oauth_access_token=\"" + token + "\"");
-        headers.set("Content-Type", "text/xml;charset=UTF-8");
-
-        HttpEntity<?> httpEntity = new HttpEntity<>(commands, headers);
-        RealtimeNmsResult response = template.postForObject(realTimeUri, httpEntity, RealtimeNmsResult.class);
-
-        if (response.getMessage().contains("access_token_expired")) {
-            getToken();
-            getPollingStatus();
-            return;
-        }
-
-        RealtimeResultObject resultObject = response.getResultObject();
-        List<RealtimeResponse> responses = resultObject.getResponses();
-        List<LampInfo> dealingWithStatus = dealingWithStatus(responses);
-        updateDevices(dealingWithStatus);
+        System.out.println(sendRealTime(commands));
     }
-
-    private static List<Get> assembGetList = new ArrayList<>();
-
-    private static List<String> pollingIds = new ArrayList<>();
 
     /**
      * 更新设备对应状态
@@ -279,6 +267,9 @@ public class RealTimeServiceImpl implements IRealTimeService {
                     continue;
                 }
                 LampInfo findOne = lampRepo.findOne(id);
+                if (null == findOne) {
+                    continue;
+                }
                 LampStatus lampStatus = findOne.getLampStatus();
                 LampControl lampControl = findOne.getLampControl();
 
@@ -457,9 +448,8 @@ public class RealTimeServiceImpl implements IRealTimeService {
      */
     private List<Get> assembGet(String deviceId) {
         List<Get> list = new ArrayList<>();
-        List<LampPointMeanings> findAll = repository.findAll();
-        if (!findAll.isEmpty()) {
-            findAll.forEach(mean -> {
+        if (!assembles.isEmpty()) {
+            assembles.forEach(mean -> {
                 Get get = new Get();
                 get.setId(deviceId);
                 get.setMeaning(mean.getMeaning());
@@ -507,9 +497,11 @@ public class RealTimeServiceImpl implements IRealTimeService {
     private Commands getPollingCommands() {
         Commands commands = new Commands();
         List<Get> getList = new ArrayList<>();
+        // 获取所有支持轮询的Lamp 的ID 的集合，且存在pollingIds中
         List<String> pollingDevices = getPollingDevices();
         if (!pollingDevices.isEmpty()) {
             pollingDevices.forEach(id -> {
+                // 拼接接口Lamp Meaning 获取列表，需确保表中数据与接口文档一致,且将获取列表存入assembGetList
                 List<Get> assembGet = assembGet(id);
                 if (null == assembGet) {
                     return;

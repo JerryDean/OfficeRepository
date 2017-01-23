@@ -38,24 +38,11 @@ public class FailureEventController {
 	@Autowired
 	IFailureEventService service;
 
-	@Deprecated
-	@RequestMapping(value = "/findByEventSource", method = RequestMethod.GET)
-	Page<FailureEvent> findByEventSource(@RequestParam(name = "eventSource", defaultValue = "none") String es,
-			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "pageSize", defaultValue = "15") Integer pageSize,
-			@RequestParam(name = "sort", defaultValue = "DESC") String direction) {
-        System.out.printf(es);
-        return service.findByEventSource(es, pageNo, pageSize, direction);
-	}
-
 	@RequestMapping(value = "/findby/querybean", method = RequestMethod.POST)
-	Page<FailureEvent> findByQueryBean(@RequestParam(name = "pageNo",defaultValue = "0") Integer pageNo,
-                                       @RequestParam(name = "pageSize",defaultValue = "15") Integer pageSize,
-                                       @RequestParam(name = "sort", defaultValue = "DESC") String direction,
-                                       @RequestParam(name = "sortBy", defaultValue = "severityLevel") String sortBy,
-                                       @RequestBody FailureEventQueryBean queryBean) {
-	    return service.findByQueryBean(pageNo, pageSize, direction, sortBy, queryBean);
-    }
+	Page<FailureEvent> findByQueryBean(
+									   @RequestBody FailureEventQueryBean queryBean) {
+		return service.findByQueryBean(queryBean);
+	}
 
 	@RequestMapping(value = "/fetch/enum", method = RequestMethod.GET)
 	List<String> getEventSoureEnum() {

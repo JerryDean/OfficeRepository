@@ -1,10 +1,12 @@
 package com.stee.nia.init;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import com.stee.nia.repository.ConnectionParamsRepository;
+import com.stee.nia.repository.LampPointMeaningsRepository;
 import com.stee.nia.service.impl.RealTimeServiceImpl;
 import com.stee.nia.websocket.MySocketHandler;
 import com.stee.sel.nia.ConnectionParams;
+import com.stee.sel.nia.LampPointMeanings;
 import org.eclipse.jetty.server.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -13,7 +15,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.List;
+import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,19 +44,16 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class InitialConfiguration implements CommandLineRunner {
+    public static long interval = 5;
+    public static Integer webSocketMode = 0;
     @Autowired
     RealTimeServiceImpl realTimeService;
-
     @Autowired
     ConnectionParamsRepository repository;
-
+    @Autowired
+    LampPointMeaningsRepository meaningsRepository;
     ScheduledExecutorService executorService = Executors.newScheduledThreadPool(5);
-
     ResourceBundle resource = ResourceBundle.getBundle("config");
-
-    public static long interval = 5;
-
-    public static Integer webSocketMode = 0;
 
     @Override
     public void run(String... arg0) throws Exception {
@@ -66,41 +67,48 @@ public class InitialConfiguration implements CommandLineRunner {
     }
 
     private void initProperties() {
-        List<ConnectionParams> findAll = repository.findAll();
-        if (null != findAll && !findAll.isEmpty() && findAll.size() >= 7) {
-            findAll.forEach(t -> {
-                realTimeService.map.put(t.getKey(), t.getValue());
-            });
-        } else {
-            Properties properties = new Properties();
+        // CMS-NMS连接参数
+        List<ConnectionParams> params = Lists.newArrayList();
+        Properties niaProps = new Properties();
+        try {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("nia-config.properties");
-            try {
-                properties.load(inputStream);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (!properties.entrySet().isEmpty()) {
-                repository.deleteAll();
-                Iterator<Map.Entry<Object, Object>> iterator = properties.entrySet().iterator();
-                Set<ConnectionParams> connectionParamsSet = Sets.newHashSet();
-                while (iterator.hasNext()) {
-                    Map.Entry<Object, Object> next = iterator.next();
-                    ConnectionParams connectionParams = new ConnectionParams();
-                    connectionParams.setKey(next.getKey().toString());
-                    connectionParams.setValue(next.getValue().toString());
-                    connectionParamsSet.add(connectionParams);
-                }
-                if (null != connectionParamsSet && !connectionParamsSet.isEmpty()) {
-                    repository.save(connectionParamsSet);
-                    //将配置文件中的配置存入Map 中
-                    connectionParamsSet.forEach(param -> {
-                        realTimeService.map.put(param.getKey(), param.getValue());
-                    });
-                }
-            } else {
-                // TODO: 2016/12/14 从数据库获取数据，并写入Properties
-            }
+            niaProps.load(inputStream);
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        niaProps.forEach((o, o2) -> {
+            ConnectionParams connectionParams = new ConnectionParams();
+            connectionParams.setKey(o.toString());
+            connectionParams.setValue(o2.toString());
+            params.add(connectionParams);
+            realTimeService.map.put(o.toString(), o2.toString());
+        });
+        repository.deleteAll();
+        repository.save(params);
+
+        // LampMeaning
+        List<LampPointMeanings> meaningss = Lists.newArrayList();
+        meaningsRepository.deleteAll();
+        Properties properties = new Properties();
+        try {
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream("meaning-config.properties");
+            properties.load(inputStream);
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        properties.forEach((o, o2) -> {
+            LampPointMeanings lampPointMeanings = new LampPointMeanings();
+            lampPointMeanings.setId(Integer.valueOf(o.toString()).intValue());
+            lampPointMeanings.setMeaning(o2.toString());
+            meaningss.add(lampPointMeanings);
+        });
+        meaningss.sort(((o1, o2) -> o1.getId().compareTo(o2.getId())));
+        meaningsRepository.save(meaningss);
+
+        realTimeService.assembles.addAll(meaningss);
+
     }
 
     private void initPollingTimer() {
@@ -110,7 +118,6 @@ public class InitialConfiguration implements CommandLineRunner {
             obj = restTemplate.getForObject(resource.getString("scm.rest.get.value") + "Polling_Interval", Integer.class);
         } catch (Exception e) {
             System.err.println(e.getMessage());
-            obj = 5;
         }
         if (null != obj) {
             try {
@@ -120,9 +127,7 @@ public class InitialConfiguration implements CommandLineRunner {
             }
         }
 
-        executorService.scheduleAtFixedRate(() -> {
-            realTimeService.getPollingStatus();
-        }, 0, interval, TimeUnit.MINUTES);
+        executorService.scheduleAtFixedRate(() -> realTimeService.getPollingStatus(), 0, interval, TimeUnit.MINUTES);
     }
 
     private void initWebSocket() {

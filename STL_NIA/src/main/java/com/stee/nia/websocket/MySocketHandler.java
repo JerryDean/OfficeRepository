@@ -1,14 +1,13 @@
 package com.stee.nia.websocket;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.stee.nia.init.InitialConfiguration;
 import com.stee.nia.repository.LampInfoRepository;
 import com.stee.sel.constant.OperationState;
-import com.stee.sel.lim.LampInfo;
 import com.stee.sel.lim.status.EnergyUsage;
 import com.stee.sel.lim.status.LampStatus;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.server.WebSocketHandler;
@@ -44,16 +43,28 @@ public class MySocketHandler extends WebSocketHandler {
     @Autowired
     LampInfoRepository repository;
 
-	@OnWebSocketMessage
-	public void onMessage(Session session, String message) throws IOException {
+    @OnWebSocketConnect
+    public void onConnect(Session session) {
+        System.out.println("Connect....");
+    }
+
+    @OnWebSocketClose
+    public void onClose(int status, String reason) {
+        System.out.println(status + ":" + reason);
+    }
+
+    @OnWebSocketMessage
+    public void onMessage(Session session, String message) throws IOException {
         Gson gson = new Gson();
-        StatusRequest statusRequest = gson.fromJson(message, StatusRequest.class);
-        System.out.println(statusRequest);
-        String type = statusRequest.getType();
-        String id = statusRequest.getId();
-        if (type.equals("lampStatus")) {
-            if (InitialConfiguration.webSocketMode == 0) {
-                LampStatus lampStatus = new LampStatus();
+        boolean flag = true;
+        while (true) {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            LampStatus lampStatus = new LampStatus();
+            if (flag) {
                 lampStatus.setVoltage(14.3f);
                 lampStatus.setPowerFactor(13f);
                 lampStatus.setLampSwitch(false);
@@ -68,34 +79,33 @@ public class MySocketHandler extends WebSocketHandler {
                 lampStatus.setOperationState(OperationState.Unknown);
                 lampStatus.setLampLevel(75);
                 lampStatus.setNodeFailureMessage(null);
-                ObjectMapper objectMapper = new ObjectMapper();
-                StatusResponse statusResponse = new StatusResponse();
-                statusResponse.setType("lampStatus");
-                statusResponse.setObject(lampStatus);
-                session.getRemote().sendString(objectMapper.writeValueAsString(statusResponse));
             } else {
-                long interval = InitialConfiguration.interval;
-                while (true) {
-                    try {
-                        Thread.sleep(interval * 60 * 1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    LampInfo lampInfo = repository.findOne(id);
-                    LampStatus lampStatus = lampInfo.getLampStatus();
-                    StatusResponse statusResponse = new StatusResponse();
-                    statusResponse.setObject(lampStatus);
-                    statusResponse.setType("lampStatus");
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    session.getRemote().sendString(objectMapper.writeValueAsString(statusResponse));
-                }
+                lampStatus.setVoltage(24.3f);
+                lampStatus.setPowerFactor(14f);
+                lampStatus.setLampSwitch(true);
+                lampStatus.setActivePower(43.13f);
+                lampStatus.setApparentPower(24.33f);
+                lampStatus.setBurningHour(6000);
+                lampStatus.setCurrentFlow(12f);
+                lampStatus.setEnergyUsage(new EnergyUsage(14d, new Date()));
+                lampStatus.setReactivePower(14.7f);
+                lampStatus.setTemperature(54f);
+                lampStatus.setInstalledDate(new Date());
+                lampStatus.setOperationState(OperationState.CommsFailure);
+                lampStatus.setLampLevel(100);
+                lampStatus.setNodeFailureMessage(null);
             }
+            StatusResponse statusResponse = new StatusResponse();
+            statusResponse.setType("lampStatus");
+            statusResponse.setObject(lampStatus);
+            flag = !flag;
+            session.getRemote().sendString(gson.toJson(statusResponse));
         }
     }
 
-	class StatusResponse {
-	    private String type;
-	    private LampStatus object;
+    class StatusResponse {
+        private String type;
+        private LampStatus object;
 
         @Override
         public String toString() {
@@ -122,38 +132,38 @@ public class MySocketHandler extends WebSocketHandler {
         }
     }
 
-	class StatusRequest {
-		private String type;
-		private String id;
+    class StatusRequest {
+        private String type;
+        private String id;
 
-		@Override
-		public String toString() {
-			return "StatusRequest{" +
-					"type='" + type + '\'' +
-					", id='" + id + '\'' +
-					'}';
-		}
+        @Override
+        public String toString() {
+            return "StatusRequest{" +
+                    "type='" + type + '\'' +
+                    ", id='" + id + '\'' +
+                    '}';
+        }
 
-		public String getType() {
-			return type;
-		}
+        public String getType() {
+            return type;
+        }
 
-		public void setType(String type) {
-			this.type = type;
-		}
+        public void setType(String type) {
+            this.type = type;
+        }
 
-		public String getId() {
-			return id;
-		}
+        public String getId() {
+            return id;
+        }
 
-		public void setId(String id) {
-			this.id = id;
-		}
-	}
+        public void setId(String id) {
+            this.id = id;
+        }
+    }
 
-	@Override
-	public void configure(WebSocketServletFactory factory) {
-		factory.register(this.getClass());
-	}
+    @Override
+    public void configure(WebSocketServletFactory factory) {
+        factory.register(this.getClass());
+    }
 
 }

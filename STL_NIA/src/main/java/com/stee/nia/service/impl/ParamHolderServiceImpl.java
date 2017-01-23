@@ -8,8 +8,12 @@ import com.stee.sel.nia.ConnectionParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /* Copyright (C) 2016, ST Electronics Info-Comm Systems PTE. LTD
  * All rights reserved.
@@ -51,7 +55,19 @@ public class ParamHolderServiceImpl implements IParamHolderService {
 			findAll.forEach(t -> {
 				RealTimeServiceImpl.map.put(t.getKey(), t.getValue());
 			});
-		} catch (Exception e) {
+			// 刷新nia-config.properties
+            try {
+                Properties properties = new Properties();
+                FileOutputStream fileOutputStream = new FileOutputStream(System.getProperty("user.dir") + "/src/main/resources/nia-config.properties");
+                RealTimeServiceImpl.map.forEach((k, v) -> {
+                    properties.setProperty(k, v);
+                });
+                properties.store(fileOutputStream, "Update at " + new Date());
+                fileOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
 			e.printStackTrace();
 			return ResponseCode.FAILED.getCode();
 		}

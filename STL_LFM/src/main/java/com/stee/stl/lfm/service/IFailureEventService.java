@@ -27,7 +27,6 @@ import com.stee.sel.lfm.FailureEvent;
  */
 public interface IFailureEventService {
 
-	Page<FailureEvent> findByEventSource(String es, Integer pageNo, Integer pageSize, String direction);
 
-    Page<FailureEvent> findByQueryBean(Integer pageNo, Integer pageSize, String direction, String sortBy, FailureEventQueryBean queryBean);
+    Page<FailureEvent> findByQueryBean(FailureEventQueryBean queryBean);
 }

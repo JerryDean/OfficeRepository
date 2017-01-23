@@ -48,7 +48,7 @@ public class ParamTypeOne {
 		this.key = key;
 	}
 
-	@XmlAttribute
+	@XmlAttribute()
 	public String getResourceId() {
 		return resourceId;
 	}

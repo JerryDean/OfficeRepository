@@ -35,6 +35,22 @@ public class FailureEventQueryBean {
     private Integer severityEnd;
     private String eventType;
 
+    private Integer pageNo;
+
+    private Integer pageSize;
+
+    private SeveritySort severitySort;
+
+    private DateSort dateSort;
+
+    public class SeveritySort {
+        public String sort;
+    }
+
+    public class DateSort {
+        public String sort;
+    }
+
     public String getEventSource() {
         return eventSource;
     }
@@ -99,17 +115,35 @@ public class FailureEventQueryBean {
         this.eventType = eventType;
     }
 
-    @Override
-    public String toString() {
-        return "FailureEventQueryBean{" +
-                "eventSource='" + eventSource + '\'' +
-                ", start=" + start +
-                ", end=" + end +
-                ", objectId='" + objectId + '\'' +
-                ", message='" + message + '\'' +
-                ", severityStart=" + severityStart +
-                ", severityEnd=" + severityEnd +
-                ", eventType='" + eventType + '\'' +
-                '}';
+    public Integer getPageNo() {
+        return pageNo;
+    }
+
+    public void setPageNo(Integer pageNo) {
+        this.pageNo = pageNo;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public SeveritySort getSeveritySort() {
+        return severitySort;
+    }
+
+    public void setSeveritySort(SeveritySort severitySort) {
+        this.severitySort = severitySort;
+    }
+
+    public DateSort getDateSort() {
+        return dateSort;
+    }
+
+    public void setDateSort(DateSort dateSort) {
+        this.dateSort = dateSort;
     }
 }

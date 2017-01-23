@@ -1,6 +1,5 @@
 package com.stee.nia.model.nms.auth;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -26,7 +25,6 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "resultObject", propOrder = { "tokenType", "token", "refresh", "expire" })
 public class AuthResult {
-	private String clazz;
 
 	private String tokenType;
 
@@ -35,15 +33,6 @@ public class AuthResult {
 	private String refresh;
 
 	private String expire;
-
-	@XmlAttribute(name = "class")
-	public String getClazz() {
-		return clazz;
-	}
-
-	public void setClazz(String clazz) {
-		this.clazz = clazz;
-	}
 
 	@XmlElement(name = "oauth_token_type")
 	public String getTokenType() {
@@ -83,8 +72,11 @@ public class AuthResult {
 
 	@Override
 	public String toString() {
-		return "AuthResult [clazz=" + clazz + ", tokenType=" + tokenType + ", token=" + token + ", refresh=" + refresh
-				+ ", expire=" + expire + "]";
+		return "AuthResult{" +
+				"tokenType='" + tokenType + '\'' +
+				", token='" + token + '\'' +
+				", refresh='" + refresh + '\'' +
+				", expire='" + expire + '\'' +
+				'}';
 	}
-
 }
