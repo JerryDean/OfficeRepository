@@ -71,7 +71,7 @@ public class InitialConfiguration implements CommandLineRunner {
         List<ConnectionParams> params = Lists.newArrayList();
         Properties niaProps = new Properties();
         try {
-            InputStream inputStream = ClassLoader.getSystemResourceAsStream("nia-config.properties");
+            InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("nia-config.properties");
             niaProps.load(inputStream);
             inputStream.close();
         } catch (IOException e) {
@@ -92,7 +92,7 @@ public class InitialConfiguration implements CommandLineRunner {
         meaningsRepository.deleteAll();
         Properties properties = new Properties();
         try {
-            InputStream inputStream = ClassLoader.getSystemResourceAsStream("meaning-config.properties");
+            InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("meaning-config.properties");
             properties.load(inputStream);
             inputStream.close();
         } catch (IOException e) {
