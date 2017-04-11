@@ -228,9 +228,11 @@ public class RealTimeServiceImpl implements IRealTimeService {
         System.out.println("Request:" + httpEntity);
         ScheduledResult scheduledResult = template.postForObject(scheduleUri, httpEntity, ScheduledResult.class);
         System.out.println("Response:" + scheduledResult);
-        if (scheduledResult.getStatus().equals("SUCCESS")) {
-            // TODO: 2016/12/18 Asyn advice client the commission status.
+        if (scheduledResult.getStatus().equals("OK")) {
+            // TODO: 2016/12/18 Asyn advice client the commission status.Let the cpm to sovel(update) the Calendar Profile's status.
+            return "COMMISSIONING";
         }
+
         // TODO: 2016/12/18 In addition of failed.Asyn advice client too.
         return null;
     }
@@ -242,7 +244,11 @@ public class RealTimeServiceImpl implements IRealTimeService {
      */
     public void getPollingStatus() {
         // 获取Token.
-        getToken();
+        if (resourceBundle.getString("environment").equals("0")) {
+            reloadProps();
+        } else {
+            getToken();
+        }
         // 拼装Get Xml数据
         Commands commands = getPollingCommands();
         System.out.println(sendRealTime(commands));

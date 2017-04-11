@@ -48,6 +48,8 @@ public class EnergyBackupTimer {
             energyHist.setLuminaireId(lamp.getId());
             energyHist.setEnergyUsage(lamp.getLampStatus().getEnergyUsage().getUsage());
             energyHist.setAssociatedTime(new Date());
+            energyHist.setModuleId(lamp.getModuleId());
+            energyHist.setGzoneId(lamp.getGeoZoneId());
             histRepository.save(energyHist);
         });
     }

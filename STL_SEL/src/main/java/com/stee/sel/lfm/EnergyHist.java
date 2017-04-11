@@ -33,6 +33,9 @@ public class EnergyHist {
     private String luminaireId;
     private Double energyUsage;
     private Date associatedTime;
+    private String moduleId;
+    private String gzoneId;
+
 
     @Id
     @GeneratedValue
@@ -72,6 +75,24 @@ public class EnergyHist {
         this.associatedTime = associatedTime;
     }
 
+    @Column(name = "module_id")
+    public String getModuleId() {
+        return moduleId;
+    }
+
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    @Column(name = "gzone_id")
+    public String getGzoneId() {
+        return gzoneId;
+    }
+
+    public void setGzoneId(String gzoneId) {
+        this.gzoneId = gzoneId;
+    }
+
     @Override
     public String toString() {
         return "EnergyHist{" +
@@ -79,6 +100,8 @@ public class EnergyHist {
                 ", luminaireId='" + luminaireId + '\'' +
                 ", energyUsage=" + energyUsage +
                 ", associatedTime=" + associatedTime +
+                ", moduleId='" + moduleId + '\'' +
+                ", gzoneId='" + gzoneId + '\'' +
                 '}';
     }
 }

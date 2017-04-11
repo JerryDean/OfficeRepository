@@ -1,8 +1,10 @@
 package com.stee.nia.service.impl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.stee.nia.model.scheduled.Calendar;
 import com.stee.nia.model.scheduled.*;
+import com.stee.nia.repository.CalendarProfileRepository;
 import com.stee.nia.repository.DailyProfileRepository;
 import com.stee.nia.repository.LuminaireRepository;
 import com.stee.nia.service.IScheduledService;
@@ -55,6 +57,9 @@ public class ScheduledServiceImpl implements IScheduledService {
 	@Autowired
     RealTimeServiceImpl realTimeService;
 
+	@Autowired
+    CalendarProfileRepository calendarProfileRepository;
+
 	@Override
 	public void commission(CalendarProfile cp) {
 		if (null == cp) {
@@ -87,7 +92,13 @@ public class ScheduledServiceImpl implements IScheduledService {
 				this.configuration = new Configuration();
 				this.configuration.setDevices(devices);
 				this.configuration.setSchedulers(schedulers);
-                realTimeService.sendScheduled(configuration);
+				String result = realTimeService.sendScheduled(configuration);
+				// To update the Calendar Profile's status.
+                if (!Strings.isNullOrEmpty(result)) {
+                    CalendarProfile profile = calendarProfileRepository.findOne(cp.getId());
+                    profile.setStatus(result);
+                    calendarProfileRepository.save(profile);
+                }
             }
 		}
 	}

@@ -2,6 +2,7 @@ package com.stee.stl.lfm.service.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.stee.sel.lfm.EventSource;
 import com.stee.sel.lfm.EventTypeEnum;
 import com.stee.sel.lfm.FailureEvent;
@@ -50,6 +51,8 @@ public class FailureEventServiceImpl implements IFailureEventService {
 
     @Override
     public Page<FailureEvent> findByQueryBean(FailureEventQueryBean queryBean) {
+        Gson gson = new Gson();
+        System.out.println(gson.toJson(queryBean));
         Integer pageNo = queryBean.getPageNo();
         Integer pageSize = queryBean.getPageSize();
         FailureEventQueryBean.SeveritySort severitySort = queryBean.getSeveritySort();
